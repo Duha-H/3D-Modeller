@@ -109,7 +109,7 @@ function Cube(gl) {
         mat4.scale(modelMatrix, modelMatrix, [x, y, z]);
     }
 
-    this.setColor = function(color, colorLocation) {
+    this.setColor = function(color) {
 
         colorD = [];
         for(let face = 0; face < 6; face++) {
@@ -119,13 +119,8 @@ function Cube(gl) {
             }
         }
 
-        this.colorBuffer1 = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer1);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorD), gl.STATIC_DRAW);
-    
-        gl.enableVertexAttribArray(colorLocation);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer1);
-        gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
 
     }
 }

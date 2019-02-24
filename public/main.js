@@ -67,6 +67,12 @@ var upX = 0, upY = 1, upZ = 0;
 
 var base = new Cube(gl);
 var cube = new Cube(gl);
+var cubes = [];
+for(var j = 0; j < 16; j++) {
+    let newCube = new Cube(gl);
+    cubes.push(newCube);
+}
+console.log(cubes);
 
 function render() {
     // update cam position
@@ -82,12 +88,16 @@ function render() {
     
     // draw
     base.applyTransformations(uniformLocations.model, [0, -1, 0], [15, 0.08, 15]);   
-    base.setColor([1, 0, 0], colorLocation);
+    base.setColor([0, 0, 0]);
     base.draw(posLocation, colorLocation);
+    var currCube = 0;
     for(var i = -1; i < 3; i++) {
         for(var j = -1; j < 3; j++) {
-            cube.applyTransformations(uniformLocations.model, [i*3, 0, j*3], [1, 1, 1]);
-            cube.draw(posLocation, colorLocation);
+            
+            cubes[currCube].applyTransformations(uniformLocations.model, [i*3, 0, j*3], [1, 1, 1]);
+            cubes[currCube].setColor([1, 0, 0]);            
+            cubes[currCube].draw(posLocation, colorLocation);
+            currCube++;
         }
     }
 }
