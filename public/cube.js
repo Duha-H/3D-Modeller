@@ -51,16 +51,32 @@ const vertexD = [
 
 ];
 
+const normalD = [
+    ...createCopies([ 0,  0,  1], 6),  // FRONT
+    ...createCopies([-1,  0,  0], 6),  // LEFT
+    ...createCopies([ 0,  0, -1], 6),  // BACK
+    ...createCopies([ 1,  0,  0], 6),  // RIGHT
+    ...createCopies([ 0,  1,  0], 6),  // TOP
+    ...createCopies([ 0, -1,  0], 6),  // BOTTOM
+];
+
 function randomColor() {
     return [Math.random(), Math.random(), Math.random()];
 }
 
-
+function createCopies(array, copies) {
+    // return "array" copied "copies" times and spread into a single array "result"
+    var result = [];
+    for(let i = 0; i < copies; i++) {
+        result.push(...array);
+    }
+    return result;
+}
 
 function Cube(gl) {
 
     // generate random face colors
-    let colorD = [];
+    var colorD = [];
     for(let face = 0; face < 6; face++) {
         let faceColor = randomColor();
         for (let vertex = 0; vertex < 6; vertex++) {
@@ -76,9 +92,13 @@ function Cube(gl) {
     this.colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorD), gl.STATIC_DRAW);
-    
 
-    this.draw = function(posLocation, colorLocation) {
+    this.normalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normalD), gl.STATIC_DRAW);    
+
+
+    this.draw = function(posLocation, colorLocation, normalLocation) {
 
         gl.enableVertexAttribArray(posLocation);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -87,6 +107,10 @@ function Cube(gl) {
         gl.enableVertexAttribArray(colorLocation);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
         gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
+
+        gl.enableVertexAttribArray(normalLocation);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+        gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, 0, 0);
 
         gl.drawArrays(gl.TRIANGLES, 0, vertexD.length / 3);        
     }
@@ -97,7 +121,8 @@ function Cube(gl) {
         mat4.translate(modelMatrix, modelMatrix, pos);
         mat4.scale(modelMatrix, modelMatrix, scale);
         //mat4.translate(modelMatrix, modelMatrix, [0.5, 0.5, -2]);
-        gl.uniformMatrix4fv(uniformLocation, false, modelMatrix);
+        //gl.uniformMatrix4fv(uniformLocation, false, modelMatrix);
+        return modelMatrix;
 
     }
 
@@ -122,6 +147,10 @@ function Cube(gl) {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorD), gl.STATIC_DRAW);
 
+    }
+
+    this.getBoundingBox = function() {
+        
     }
 }
 

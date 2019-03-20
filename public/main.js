@@ -1,6 +1,6 @@
+// set up gl context
 const canvas = document.querySelector('canvas');
 const gl = canvas.getContext('webgl');
-var test = 3;
 
 if (!gl) {
     throw new Error('You do not have support for WebGL');
@@ -26,8 +26,8 @@ gl.useProgram(program); // creates executable program on graphics card and use i
 
 // define which attributes to enable 
 const posLocation = gl.getAttribLocation(program, "position");
-
 const colorLocation = gl.getAttribLocation(program, "color");
+const normalLocation = gl.getAttribLocation(program, "normal");
 
 gl.enable(gl.DEPTH_TEST);
 gl.enable(gl.SCISSOR_TEST);
@@ -35,12 +35,14 @@ gl.enable(gl.SCISSOR_TEST);
 const uniformLocations = {
     model: gl.getUniformLocation(program, "modelMtx"),
     view: gl.getUniformLocation(program, "viewMtx"),
-    projection: gl.getUniformLocation(program, "projectionMtx")
+    projection: gl.getUniformLocation(program, "projectionMtx"),
+    normal: gl.getUniformLocation(program, "normalMtx")
 };
 
 const {mat4} = glMatrix; // object destructuring to get mat4
 const viewMatrix = mat4.create();
 const projectionMatrix = mat4.create();
+const normalMatrix = mat4.create();
 mat4.perspective(projectionMatrix, 
     90 * Math.PI / 180, 
     1, 
@@ -51,8 +53,8 @@ mat4.perspective(projectionMatrix,
 const modelViewMatrix = mat4.create();
 const finalMatrix = mat4.create();
 
-var theta = 0;
-var phi = 0;
+var theta = 45;
+var phi = 25;
 var diff = 1;
 
 var drag = false;
@@ -63,7 +65,7 @@ var dx = 0, dy = 0;
 var camDistance = 15;
 var cameraX = 4, cameraY = 5, cameraZ = 7;
 var refX = 0, refY = 0, refZ = 0;
-var upX = 0, upY = 1, upZ = 0; 
+var upX = 0, upY = 1, upZ = 0;
 
 var base = new Cube(gl);
 var cube = new Cube(gl);
@@ -72,7 +74,6 @@ for(var j = 0; j < 16; j++) {
     let newCube = new Cube(gl);
     cubes.push(newCube);
 }
-console.log(cubes);
 
 function render() {
     // update cam position
@@ -87,16 +88,28 @@ function render() {
     gl.uniformMatrix4fv(uniformLocations.projection, false, projectionMatrix);
     
     // draw
-    base.applyTransformations(uniformLocations.model, [0, -1, 0], [15, 0.08, 15]);   
-    base.setColor([0, 0, 0]);
-    base.draw(posLocation, colorLocation);
+    const modelMatrix = base.applyTransformations(uniformLocations.model, [0, -1, 0], [15, 0.08, 15]);   
+    gl.uniformMatrix4fv(uniformLocations.model, false, modelMatrix);
+    const modelViewMtx = mat4.create();
+    mat4.multiply(modelViewMtx, viewMatrix, modelMatrix);
+    mat4.invert(normalMatrix, modelViewMtx);
+    mat4.transpose(normalMatrix, normalMatrix);
+    gl.uniformMatrix4fv(uniformLocations.normal, false, modelMatrix);
+    base.setColor([1, 1, 1]);
+    base.draw(posLocation, colorLocation, normalLocation);
     var currCube = 0;
     for(var i = -1; i < 3; i++) {
         for(var j = -1; j < 3; j++) {
             
-            cubes[currCube].applyTransformations(uniformLocations.model, [i*3, 0, j*3], [1, 1, 1]);
-            cubes[currCube].setColor([1, 0, 0]);            
-            cubes[currCube].draw(posLocation, colorLocation);
+            const modelMatrix = cubes[currCube].applyTransformations(uniformLocations.model, [i*3, 0, j*3], [1, 1, 1]);
+            const normalMatrix = mat4.create();
+            gl.uniformMatrix4fv(uniformLocations.model, false, modelMatrix);
+            mat4.multiply(modelViewMtx, viewMatrix, modelMatrix);
+            mat4.invert(normalMatrix, modelViewMtx);
+            mat4.transpose(normalMatrix, normalMatrix);
+            gl.uniformMatrix4fv(uniformLocations.normal, false, normalMatrix);
+            cubes[currCube].setColor([0, 1, 1]);       
+            cubes[currCube].draw(posLocation, colorLocation, normalLocation);
             currCube++;
         }
     }
