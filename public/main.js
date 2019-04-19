@@ -6,73 +6,119 @@ if (!gl) {
     throw new Error('You do not have support for WebGL');
 }
 
-// create shaders
-const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-let vertexShaderCode = document.getElementById("vertex-shader").firstChild.nodeValue;
-gl.shaderSource(vertexShader, vertexShaderCode);
-gl.compileShader(vertexShader);
+// VARIABLE DEFINITIONS
 
-const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-let fragmentShaderCode = document.getElementById("fragment-shader").firstChild.nodeValue;
-gl.shaderSource(fragmentShader, fragmentShaderCode);
-gl.compileShader(fragmentShader);
+// shader program
+let program;
+let vertexShader;
+let fragmentShader;
 
-const program = gl.createProgram();
-gl.attachShader(program, vertexShader);
-gl.attachShader(program, fragmentShader);
+// shader program attributes, define which attributes to enable 
+let posLocation;
+let colorLocation;
+let normalLocation;
+let uniformLocations;
 
-gl.linkProgram(program); // tie everything together
-gl.useProgram(program); // creates executable program on graphics card and use it to draw
-
-// define which attributes to enable 
-const posLocation = gl.getAttribLocation(program, "position");
-const colorLocation = gl.getAttribLocation(program, "color");
-const normalLocation = gl.getAttribLocation(program, "normal");
-
-gl.enable(gl.DEPTH_TEST);
-gl.enable(gl.SCISSOR_TEST);
-
-const uniformLocations = {
-    model: gl.getUniformLocation(program, "modelMtx"),
-    view: gl.getUniformLocation(program, "viewMtx"),
-    projection: gl.getUniformLocation(program, "projectionMtx"),
-    normal: gl.getUniformLocation(program, "normalMtx")
-};
-
+// context matrices
 const {mat4} = glMatrix; // object destructuring to get mat4
-const viewMatrix = mat4.create();
-const projectionMatrix = mat4.create();
-const normalMatrix = mat4.create();
-mat4.perspective(projectionMatrix, 
-    90 * Math.PI / 180, 
-    1, 
-    0.0001,
-    10000
-);
+let viewMatrix;
+let modelViewMatrix;
+let finalMatrix;
+let projectionMatrix;
+let normalMatrix;
 
-const modelViewMatrix = mat4.create();
-const finalMatrix = mat4.create();
-
-var theta = 45;
-var phi = 25;
-var diff = 1;
-
+// camera position parameters
 var drag = false;
 var oldX, oldY;
 var dx = 0, dy = 0;
 
-// camera position parameters
 var camDistance = 15;
 var cameraX = 4, cameraY = 5, cameraZ = 7;
 var refX = 0, refY = 0, refZ = 0;
 var upX = 0, upY = 1, upZ = 0;
+var theta = 45; // horizontal angle
+var phi = 25;   // vertical angle
+var diff = 1;
 
-var base = new Cube(gl);
-var cube = new Cube(gl);
-var cubes = [];
-for(var j = 0; j < 16; j++) {
-    let newCube = new Cube(gl);
-    cubes.push(newCube);
+// scene objects
+let base;
+let cube;
+let cubes;
+
+
+function createShaderProgram() {
+    // create shaders
+    vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    let vertexShaderCode = document.getElementById("vertex-shader").firstChild.nodeValue;
+    gl.shaderSource(vertexShader, vertexShaderCode);
+    gl.compileShader(vertexShader);
+
+    fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    let fragmentShaderCode = document.getElementById("fragment-shader").firstChild.nodeValue;
+    gl.shaderSource(fragmentShader, fragmentShaderCode);
+    gl.compileShader(fragmentShader);
+
+    // create program
+    program = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+}
+
+function run() {
+    // run GL set up code and render
+    createShaderProgram();
+
+    gl.linkProgram(program); // tie everything together
+    gl.useProgram(program);  // creates executable program on graphics card and use it to draw
+
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.SCISSOR_TEST);
+
+    // define shader program attributes and their locations
+    posLocation = gl.getAttribLocation(program, "position");
+    colorLocation = gl.getAttribLocation(program, "color");
+    normalLocation = gl.getAttribLocation(program, "normal");
+
+    uniformLocations = {
+        model: gl.getUniformLocation(program, "modelMtx"),
+        view: gl.getUniformLocation(program, "viewMtx"),
+        projection: gl.getUniformLocation(program, "projectionMtx"),
+        normal: gl.getUniformLocation(program, "normalMtx")
+    };
+
+    setupContextMatrices();
+
+    createCubes();
+
+    // render scene
+    render();
+}
+
+function setupContextMatrices() {
+    // define transformation and projection matrices
+    viewMatrix = mat4.create();
+    modelViewMatrix = mat4.create();
+    finalMatrix = mat4.create();
+    projectionMatrix = mat4.create();
+    normalMatrix = mat4.create();
+
+    // set up perspective
+    mat4.perspective(projectionMatrix, 
+        90 * Math.PI / 180, 
+        1, 
+        0.0001,
+        10000
+    );
+}
+
+function createCubes() {
+    base = new Cube(gl);
+    cube = new Cube(gl);
+    cubes = [];
+    for(var j = 0; j < 16; j++) {
+        let newCube = new Cube(gl);
+        cubes.push(newCube);
+    }
 }
 
 function render() {
@@ -115,9 +161,7 @@ function render() {
     }
 }
 
-render();
-
-// mouse events
+// event handlers
 function mouseDown(e) {
     drag = true;
     oldX = e.pageX, oldY = e.pageY;
@@ -158,3 +202,6 @@ canvas.addEventListener("mouseup", mouseUp, false);
 canvas.addEventListener("mousemove", mouseMove, false);
 canvas.addEventListener("mouseout", mouseUp, false);
 window.addEventListener("keydown", keyboardHandler, false);
+
+// create scene
+run();
