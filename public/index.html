@@ -2,13 +2,16 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge">-->
     <title>WebGL Trial 2!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="public/main.css">
-    <script src="public/gl-matrix-min.js" defer></script>
-    <script src="public/cube.js" defer></script>
-    <script src="public/main.js" defer></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="./main.css">
+    <script src="./main.js" type="module"></script>
+    <!--
+        <script src="public/src/gl-setup/gl-matrix-min.js" defer></script>
+        <script src="public/src/models/cube.js" defer></script>
+    -->
+    
 
     <script id="vertex-shader" type="x-shader/x-vertex">
         precision highp float;
@@ -59,7 +62,7 @@
         <h1>blocks</h1>
     </div>
     <div id="content">
-        <canvas width="500" height="500">This browser does not seem to support WebGL</canvas>
+        <canvas width="1000" height="1000">This browser does not seem to support WebGL</canvas>
     </div>
     <div id="navigation">
         <p>UP ARROW to zoom in</p>
@@ -68,6 +71,7 @@
     </div>
     <div id="sidebar">
         <p>world navigation and page controls will probably go here</p>
+        <p id="test">Test</p>
     </div>
 </body>
 </html>

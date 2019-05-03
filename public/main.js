@@ -1,3 +1,6 @@
+import { Cube } from './src/models/cube.js';
+import { ShaderProgram } from './src/gl-setup/shaderProgram.js';
+
 // set up gl context
 const canvas = document.querySelector('canvas');
 const gl = canvas.getContext('webgl');
@@ -9,9 +12,7 @@ if (!gl) {
 // VARIABLE DEFINITIONS
 
 // shader program
-let program;
-let vertexShader;
-let fragmentShader;
+var program;
 
 // shader program attributes, define which attributes to enable 
 let posLocation;
@@ -45,28 +46,9 @@ let base;
 let cube;
 let cubes;
 
-
-function createShaderProgram() {
-    // create shaders
-    vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    let vertexShaderCode = document.getElementById("vertex-shader").firstChild.nodeValue;
-    gl.shaderSource(vertexShader, vertexShaderCode);
-    gl.compileShader(vertexShader);
-
-    fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-    let fragmentShaderCode = document.getElementById("fragment-shader").firstChild.nodeValue;
-    gl.shaderSource(fragmentShader, fragmentShaderCode);
-    gl.compileShader(fragmentShader);
-
-    // create program
-    program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-}
-
 function run() {
     // run GL set up code and render
-    createShaderProgram();
+    program = ShaderProgram(gl);
 
     gl.linkProgram(program); // tie everything together
     gl.useProgram(program);  // creates executable program on graphics card and use it to draw

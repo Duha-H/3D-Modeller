@@ -1,5 +1,7 @@
-// Cube object definition and functions
+import  '../gl-setup/gl-matrix.js';
 
+// Cube object definition and functions
+const {mat4} = glMatrix; // object destructuring to get mat4
 const vertexD = [
     // Front
      1,  1,  1,
@@ -73,7 +75,7 @@ function createCopies(array, copies) {
     return result;
 }
 
-function Cube(gl) {
+export function Cube(gl) {
 
     // generate random face colors
     var colorD = [];
@@ -154,3 +156,5 @@ function Cube(gl) {
     }
 }
 
+
+//export { Cube };
