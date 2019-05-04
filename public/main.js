@@ -115,28 +115,41 @@ function render() {
     gl.uniformMatrix4fv(uniformLocations.view, false, viewMatrix);
     gl.uniformMatrix4fv(uniformLocations.projection, false, projectionMatrix);
     
-    // draw
-    const modelMatrix = base.applyTransformations(uniformLocations.model, [0, -1, 0], [15, 0.08, 15]);   
+    // draw base
+    let modelMatrix = mat4.create();
+    base.translate([0, -1, 0], modelMatrix);
+    base.scale([15, 0.08, 15], modelMatrix);
     gl.uniformMatrix4fv(uniformLocations.model, false, modelMatrix);
-    const modelViewMtx = mat4.create();
-    mat4.multiply(modelViewMtx, viewMatrix, modelMatrix);
-    mat4.invert(normalMatrix, modelViewMtx);
+    mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
+    mat4.invert(normalMatrix, modelViewMatrix);
     mat4.transpose(normalMatrix, normalMatrix);
-    gl.uniformMatrix4fv(uniformLocations.normal, false, modelMatrix);
-    base.setColor([1, 1, 1]);
+    gl.uniformMatrix4fv(uniformLocations.normal, false, normalMatrix);
+    base.setColor([1, 0.5, 0.5]);
     base.draw(posLocation, colorLocation, normalLocation);
+
+    // draw blocks
     var currCube = 0;
     for(var i = -1; i < 3; i++) {
         for(var j = -1; j < 3; j++) {
             
-            const modelMatrix = cubes[currCube].applyTransformations(uniformLocations.model, [i*3, 0, j*3], [1, 1, 1]);
-            const normalMatrix = mat4.create();
-            gl.uniformMatrix4fv(uniformLocations.model, false, modelMatrix);
-            mat4.multiply(modelViewMtx, viewMatrix, modelMatrix);
-            mat4.invert(normalMatrix, modelViewMtx);
-            mat4.transpose(normalMatrix, normalMatrix);
-            gl.uniformMatrix4fv(uniformLocations.normal, false, normalMatrix);
+            // create model matrix for object
+            let modelMatrix = mat4.create(); 
+            // apply object transformations
+            cubes[currCube].translate([i*3, 0, j*3], modelMatrix);
+            cubes[currCube].scale([1, 1, 1], modelMatrix);
             cubes[currCube].setColor([0, 1, 1]);       
+
+            // create normals matrix
+            let normalMatrix = mat4.create();
+            mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
+            mat4.invert(normalMatrix, modelViewMatrix);
+            mat4.transpose(normalMatrix, normalMatrix);
+
+            // bind matrix locations
+            gl.uniformMatrix4fv(uniformLocations.model, false, modelMatrix);
+            gl.uniformMatrix4fv(uniformLocations.normal, false, normalMatrix);
+
+            // draw object
             cubes[currCube].draw(posLocation, colorLocation, normalLocation);
             currCube++;
         }
