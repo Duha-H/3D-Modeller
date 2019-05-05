@@ -1,5 +1,7 @@
-import { Cube } from './src/models/cube.js';
-import { ShaderProgram } from './src/gl-setup/shaderProgram.js';
+import { Cube } from './js/models/cube.js';
+import { ShaderProgram } from './js/gl-setup/shaderProgram.js';
+import { degToRad } from './js/utils/utils.js';
+import { Camera } from './js/scene-objects/camera.js';
 
 // set up gl context
 const canvas = document.querySelector('canvas');
@@ -15,20 +17,19 @@ if (!gl) {
 var program;
 
 // shader program attributes, define which attributes to enable 
-let posLocation;
-let colorLocation;
-let normalLocation;
-let uniformLocations;
+var attribLocations;
+var uniformLocations;
 
 // context matrices
 const {mat4} = glMatrix; // object destructuring to get mat4
-let viewMatrix;
-let modelViewMatrix;
-let finalMatrix;
-let projectionMatrix;
-let normalMatrix;
+var viewMatrix = mat4.create();
+var modelViewMatrix = mat4.create();
+var finalMatrix = mat4.create();
+var projectionMatrix = mat4.create();
+var normalMatrix = mat4.create();
 
 // camera position parameters
+var camera;
 var drag = false;
 var oldX, oldY;
 var dx = 0, dy = 0;
@@ -42,24 +43,25 @@ var phi = 25;   // vertical angle
 var diff = 1;
 
 // scene objects
-let base;
-let cube;
-let cubes;
+var base;
+var cube;
+var cubes;
 
-function run() {
+function main() {
     // run GL set up code and render
     program = ShaderProgram(gl);
 
     gl.linkProgram(program); // tie everything together
-    gl.useProgram(program);  // creates executable program on graphics card and use it to draw
+    gl.useProgram(program);  // create executable program on graphics card and use it to draw
 
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.SCISSOR_TEST);
 
-    // define shader program attributes and their locations
-    posLocation = gl.getAttribLocation(program, "position");
-    colorLocation = gl.getAttribLocation(program, "color");
-    normalLocation = gl.getAttribLocation(program, "normal");
+    attribLocations = {
+        position: gl.getAttribLocation(program, "position"),
+        color: gl.getAttribLocation(program, "color"),
+        normal: gl.getAttribLocation(program, "normal")
+    };
 
     uniformLocations = {
         model: gl.getUniformLocation(program, "modelMtx"),
@@ -68,32 +70,32 @@ function run() {
         normal: gl.getUniformLocation(program, "normalMtx")
     };
 
-    setupContextMatrices();
+    setupCamera();
 
     createCubes();
 
-    // render scene
-    render();
+    // create scene
+    drawScene();
 }
 
-function setupContextMatrices() {
-    // define transformation and projection matrices
-    viewMatrix = mat4.create();
-    modelViewMatrix = mat4.create();
-    finalMatrix = mat4.create();
-    projectionMatrix = mat4.create();
-    normalMatrix = mat4.create();
 
-    // set up perspective
-    mat4.perspective(projectionMatrix, 
-        90 * Math.PI / 180, 
-        1, 
+function setupCamera() {
+    // define camera position, reference, and up vector
+    // prepare projection matrix
+    camera = new Camera([cameraX, cameraY, cameraZ],
+        [refX, refY, refZ],
+        [upX, upY, upZ],
+        true);
+
+    camera.setPerspective(projectionMatrix, degToRad(90),
+        1,
         0.0001,
         10000
     );
 }
 
 function createCubes() {
+    // creates block objects used in scene
     base = new Cube(gl);
     cube = new Cube(gl);
     cubes = [];
@@ -103,14 +105,14 @@ function createCubes() {
     }
 }
 
-function render() {
+function drawScene() {
     // update cam position
-    cameraY = camDistance * Math.sin(phi * Math.PI / 180);
-    cameraX = camDistance * Math.cos(phi * Math.PI / 180) * Math.cos(theta * Math.PI / 180);
-    cameraZ = camDistance * Math.cos(phi * Math.PI / 180) * Math.sin(theta * Math.PI / 180);
+    cameraY = camDistance * Math.sin(degToRad(phi));
+    cameraX = camDistance * Math.cos(degToRad(phi)) * Math.cos(degToRad(theta));
+    cameraZ = camDistance * Math.cos(degToRad(phi)) * Math.sin(degToRad(theta));
 
-    mat4.lookAt(viewMatrix, [cameraX, cameraY, cameraZ], [refX, refY, refZ], [upX, upY, upZ]);    
-    
+    camera.updatePosition(viewMatrix, [cameraX, cameraY, cameraZ]);
+
     // update uniforms
     gl.uniformMatrix4fv(uniformLocations.view, false, viewMatrix);
     gl.uniformMatrix4fv(uniformLocations.projection, false, projectionMatrix);
@@ -119,13 +121,16 @@ function render() {
     let modelMatrix = mat4.create();
     base.translate([0, -1, 0], modelMatrix);
     base.scale([15, 0.08, 15], modelMatrix);
-    gl.uniformMatrix4fv(uniformLocations.model, false, modelMatrix);
+
     mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
     mat4.invert(normalMatrix, modelViewMatrix);
     mat4.transpose(normalMatrix, normalMatrix);
+
+    gl.uniformMatrix4fv(uniformLocations.model, false, modelMatrix);
     gl.uniformMatrix4fv(uniformLocations.normal, false, normalMatrix);
+
     base.setColor([1, 0.5, 0.5]);
-    base.draw(posLocation, colorLocation, normalLocation);
+    base.draw(attribLocations.position, attribLocations.color, attribLocations.normal);
 
     // draw blocks
     var currCube = 0;
@@ -145,12 +150,12 @@ function render() {
             mat4.invert(normalMatrix, modelViewMatrix);
             mat4.transpose(normalMatrix, normalMatrix);
 
-            // bind matrix locations
+            // specify matrix values for shader program uniforms
             gl.uniformMatrix4fv(uniformLocations.model, false, modelMatrix);
             gl.uniformMatrix4fv(uniformLocations.normal, false, normalMatrix);
 
             // draw object
-            cubes[currCube].draw(posLocation, colorLocation, normalLocation);
+            cubes[currCube].draw(attribLocations.position, attribLocations.color, attribLocations.normal);
             currCube++;
         }
     }
@@ -178,7 +183,7 @@ function mouseMove(e) {
     oldX = e.pageX;
     oldY = e.pageY;
     e.preventDefault();
-    render();
+    drawScene();
 }
 
 function keyboardHandler(e) {
@@ -188,7 +193,7 @@ function keyboardHandler(e) {
     if (keyCode == 40) // Down Arrow
         camDistance += 0.5; // zoom out
     e.preventDefault();
-    render();
+    drawScene();
 }
 
 
@@ -199,4 +204,4 @@ canvas.addEventListener("mouseout", mouseUp, false);
 window.addEventListener("keydown", keyboardHandler, false);
 
 // create scene
-run();
+main();

@@ -10,8 +10,8 @@ export function randomColor() {
 
 /**
  * Returns array copied numCopies times and spread into a single array "result"
- * @param {*} array 
- * @param {*} numCopies 
+ * @param {array} array 
+ * @param {number} numCopies 
  */
 export function copyArray(array, numCopies) {
     var result = [];
@@ -21,4 +21,18 @@ export function copyArray(array, numCopies) {
     return result;
 }
 
-//export *  from './utils.js';
+/**
+ * Converts angle from degrees to radians
+ * @param {number} x Angle in degrees
+ */
+export function degToRad(x) {
+    return x * Math.PI / 180;
+}
+
+/**
+ * Converts angle from radians to degrees
+ * @param {number} x Angle in radians
+ */
+export function radToDeg(x) {
+    return x * 180 / Math.PI;
+}

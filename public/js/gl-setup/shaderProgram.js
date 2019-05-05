@@ -7,6 +7,10 @@ var fragmentShader;
 var program;
 var gl;
 
+/**
+ * Creates and returns a shader program
+ * @param {WebGLRenderingContext} renderingContext 
+ */
 export function ShaderProgram(renderingContext) {
 
     gl = renderingContext;
@@ -22,7 +26,9 @@ export function ShaderProgram(renderingContext) {
     return program;
 }
 
-
+/**
+ * Defines fragment and vertex shader programs from shader code
+ */
 function createShaders() {
     
     // create shaders
@@ -36,12 +42,4 @@ function createShaders() {
     gl.shaderSource(fragmentShader, fragmentShaderCode);
     gl.compileShader(fragmentShader);
 
-    /*
-    // create program
-    program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    */
 }
-
-//export { ShaderProgram };
