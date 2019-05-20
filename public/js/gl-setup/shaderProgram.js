@@ -16,7 +16,11 @@ export function ShaderProgram(renderingContext) {
     gl = renderingContext;
     
     // create shaders
-    createShaders();
+    let vertexShaderCode = document.getElementById("vertex-shader").firstChild.nodeValue;
+    vertexShader = createShader(gl.VERTEX_SHADER, vertexShaderCode);
+    
+    let fragmentShaderCode = document.getElementById("fragment-shader").firstChild.nodeValue;
+    fragmentShader = createShader(gl.FRAGMENT_SHADER, fragmentShaderCode);
     
     // create program
     program = gl.createProgram();
@@ -27,19 +31,24 @@ export function ShaderProgram(renderingContext) {
 }
 
 /**
- * Defines fragment and vertex shader programs from shader code
+ * Returns a compiled shader program from given source code
+ * @param {GLenum} type shader program type, gl.VERTEX_SHADER or gl.FRAGMENT_SHADER
+ * @param {DOMString} shaderCode source code of shader program
  */
-function createShaders() {
-    
-    // create shaders
-    vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    let vertexShaderCode = document.getElementById("vertex-shader").firstChild.nodeValue;
-    gl.shaderSource(vertexShader, vertexShaderCode);
-    gl.compileShader(vertexShader);
+function createShader(type, shaderCode) {
 
-    fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-    let fragmentShaderCode = document.getElementById("fragment-shader").firstChild.nodeValue;
-    gl.shaderSource(fragmentShader, fragmentShaderCode);
-    gl.compileShader(fragmentShader);
+    // create shader
+    let shader;
+    const shaderType = type === gl.VERTEX_SHADER ? "vertex" : "shader";
+    shader = gl.createShader(type);
+    gl.shaderSource(shader, shaderCode);
+    gl.compileShader(shader);
 
+    // check for syntax/compilation errors
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        var info = gl.getShaderInfoLog(shader);
+        throw 'Could not compile ' + shaderType + ' shader program: \n\n' + info;
+    }
+
+    return shader;
 }

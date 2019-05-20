@@ -27,12 +27,12 @@
         uniform mat4 viewMtx;
         uniform mat4 projectionMtx;
         uniform mat4 normalMtx;
-        varying mat4 normalMtxOut;
+        varying mat4 vNormalMtx;
 
         void main() {
             vColor = color;
             vNormal = normal;
-            normalMtxOut = normalMtx;
+            vNormalMtx = normalMtx;
             //vec3 worldNormal = (normalMtx * vec4(vNormal, 1.0)).xyz;
             gl_Position = projectionMtx * viewMtx * modelMtx * vec4(position, 1);
         }
@@ -45,13 +45,13 @@
 
         varying vec3 vColor;
         varying vec3 vNormal;
-        varying mat4 normalMtxOut;
+        varying mat4 vNormalMtx;
 
         void main() {
             vec4 diffuse = vec4(1.0, 1.0, 1.0, 1.0) * max(dot(vNormal, lightDir), 0.0);
-            vec4 transformedNormal = normalMtxOut * vec4(vNormal, 1.0);
+            vec4 transformedNormal = vNormalMtx * vec4(vNormal, 1.0);
             float directional = max(dot(transformedNormal.xyz, lightDir), 0.0);
-            vec3 ambient = vec3(0.3, 0.3, 0.3);
+            vec3 ambient = vec3(0.5, 0.5, 0.5);
             vec3 vLighting = ambient + (directional * vec3(1, 1, 1));
             gl_FragColor = vec4(vColor * vLighting, 1);
         }
@@ -59,12 +59,20 @@
 </head>
 
 <body class="container">
+    <div id="content">
+        <canvas id="canvas" width="1080" height="920">This browser does not seem to support WebGL</canvas>
+        <div id="controls">
+            <h3>Controls!</h3>
+        </div>
+    </div>
+    <!--
     <div id="header">
         <h1>blocks</h1>
     </div>
-    <div id="content">
-        <canvas width="1000" height="1000">This browser does not seem to support WebGL</canvas>
-    </div>
+    -->
+    
+    <!--
+    <div id="content"></div>
     <div id="navigation">
         <p>UP ARROW to zoom in</p>
         <p>DOWN ARROW to zoom out</p>
@@ -74,5 +82,10 @@
         <p>world navigation and page controls will probably go here</p>
         <p id="test">Test</p>
     </div>
+    -->
+    <div id="snackbar">
+        Testing snackbar!
+    </div>
+    
 </body>
 </html>

@@ -1,7 +1,16 @@
 //import '../gl-setup/gl-matrix.js';
+import { degToRad } from '../utils/utils.js';
 
 
 const {mat4} = glMatrix; // object destructuring to get mat4
+// default camera position and reference attributes
+const CAM_DISTANCE = 20;
+const CAM_X = 4, CAM_Y = 5, CAM_Z = 7;
+const REF_X = 0, REF_Y = 0, REF_Z = 0;
+const UP_X = 0, UP_Y = 1, UP_Z = 0;
+const H_ANGLE = 45; // horizontal angle
+const V_ANGLE = 25; // vertical angle
+const RATE = 1;     // camera orbitting rate
 
 /**
  * Creates Camera object
@@ -11,14 +20,20 @@ const {mat4} = glMatrix; // object destructuring to get mat4
 
 export class Camera {
 
-    constructor(position, reference, upVector, userControlled) {
+    constructor() {
         // Camera position
-        this.position = position;
-        this.reference = reference;
-        this.upVector = upVector;
+        this.position = [CAM_X, CAM_Y, CAM_Z];
+        this.reference = [REF_X, REF_Y, REF_Z];
+        this.upVector = [UP_X, UP_Y, UP_Z];
+        this.distance = CAM_DISTANCE;
+        this.hAngle = H_ANGLE;
+        this.vAngle = V_ANGLE;
+        this.rate = RATE;
 
-        // Define user control
-        this.enableControl = userControlled;
+        // Camera transformation matrices
+        this.projectionMatrix = mat4.create();
+        this.viewMatrix = mat4.create();
+        
     }
     
     /**
@@ -26,9 +41,9 @@ export class Camera {
      * @param {mat4} viewMatrix 
      * @param {array} position 
      */
-    updatePosition(viewMatrix, newPosition) {
+    updatePosition(newPosition) {
         this.position = newPosition;
-        mat4.lookAt(viewMatrix, this.position, this.reference, this.upVector);
+        mat4.lookAt(this.viewMatrix, this.position, this.reference, this.upVector);
     }
 
     /**
@@ -36,9 +51,9 @@ export class Camera {
      * @param {mat4} viewMatrix 
      * @param {array} newReference 
      */
-    updateReference(viewMatrix, newReference) {
+    updateReference(newReference) {
         this.reference = newReference;
-        mat4.lookAt(viewMatrix, this.position, this.reference, this.upVector);
+        mat4.lookAt(this.viewMatrix, this.position, this.reference, this.upVector);
     }
 
     /**
@@ -46,9 +61,9 @@ export class Camera {
      * @param {mat4} viewMatrix 
      * @param {array} newUpVector 
      */
-    updateUpVector(viewMatrix, newUpVector) {
+    updateUpVector(newUpVector) {
         this.upVector = newUpVector;
-        mat4.lookAt(viewMatrix, this.position, this.reference, this.upVector);
+        mat4.lookAt(this.viewMatrix, this.position, this.reference, this.upVector);
     }
 
     /**
@@ -59,8 +74,8 @@ export class Camera {
      * @param {number} near Near plane position
      * @param {number} far Far plane position
      */
-    setPerspective(projectionMatrix, fov, aspectRatio, near, far) {
-        mat4.perspective(projectionMatrix, 
+    setPerspective(fov, aspectRatio, near, far) {
+        mat4.perspective(this.projectionMatrix, 
             fov, 
             aspectRatio, 
             near,
@@ -87,6 +102,37 @@ export class Camera {
             near,
             far
         );
+    }
+
+    /**
+     * Sets camera's default view matrix
+     */
+    setView() {
+
+        const cameraY = CAM_DISTANCE * Math.sin(degToRad(V_ANGLE));
+        const cameraX = CAM_DISTANCE * Math.cos(degToRad(V_ANGLE)) * Math.cos(degToRad(H_ANGLE));
+        const cameraZ = CAM_DISTANCE * Math.cos(degToRad(V_ANGLE)) * Math.sin(degToRad(H_ANGLE));
+
+        this.updatePosition([cameraX, cameraY, cameraZ]);
+
+    }
+
+    /**
+     * Updates camera viewing attributes and matrix
+     * @param {Number} vAngle vertical angle in degrees
+     * @param {Number} hAngle horizontal angle in degrees
+     * @param {Number} camDistance length of viewing vector
+     */
+    updateView(vAngle, hAngle, camDistance) {
+
+        this.distance = camDistance;
+        this.hAngle = hAngle;
+        this.vAngle = vAngle;
+        var cameraY = camDistance * Math.sin(degToRad(vAngle));
+        var cameraX = camDistance * Math.cos(degToRad(vAngle)) * Math.cos(degToRad(hAngle));
+        var cameraZ = camDistance * Math.cos(degToRad(vAngle)) * Math.sin(degToRad(hAngle));
+
+        this.updatePosition([cameraX, cameraY, cameraZ]);
     }
 
 }

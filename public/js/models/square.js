@@ -11,60 +11,14 @@ const vertices = [
     -1,  1,  1,
     -1,  1,  1,
      1, -1,  1,
-    -1, -1,  1,
-    
-    // Left
-    -1,  1,  1,
-    -1, -1,  1,
-    -1,  1, -1,
-    -1,  1, -1,
-    -1, -1,  1,
-    -1, -1, -1,
-
-    // Back
-    -1,  1, -1,
-    -1, -1, -1,
-     1,  1, -1,
-     1,  1, -1,
-    -1, -1, -1,
-     1, -1, -1,
-
-    // Right
-     1,  1, -1,
-     1, -1, -1,
-     1,  1,  1,
-     1,  1,  1,
-     1, -1,  1,
-     1, -1, -1,
-
-    // Top
-     1,  1,  1,
-     1,  1, -1,
-    -1,  1,  1,
-    -1,  1,  1,
-     1,  1, -1,
-    -1,  1, -1,
-
-    // Bottom
-     1, -1,  1,
-     1, -1, -1,
-    -1, -1,  1,
-    -1, -1,  1,
-     1, -1, -1,
-    -1, -1, -1
-
+    -1, -1,  1
 ];
 
 const normals = [
-    ...utils.copyArray([ 0,  0,  1], 6),  // FRONT
-    ...utils.copyArray([-1,  0,  0], 6),  // LEFT
-    ...utils.copyArray([ 0,  0, -1], 6),  // BACK
-    ...utils.copyArray([ 1,  0,  0], 6),  // RIGHT
-    ...utils.copyArray([ 0,  1,  0], 6),  // TOP
-    ...utils.copyArray([ 0, -1,  0], 6),  // BOTTOM
+    ...utils.copyArray([ 0,  0,  1], 6)  // FRONT
 ];
 
-export class Cube {
+export class Square {
 
     constructor(gl) {
 
@@ -76,8 +30,8 @@ export class Cube {
         
         // generate random face colors
         this.color = [];
-        let faceColor = utils.randomColor();
-        for (let face = 0; face < 6; face++) {
+        for (let face = 0; face < 1; face++) {
+            let faceColor = utils.randomColor();
             for (let vertex = 0; vertex < 6; vertex++) {
                 this.color.push(...faceColor);
             }
