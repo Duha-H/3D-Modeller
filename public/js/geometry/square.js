@@ -1,7 +1,9 @@
 import '../gl-setup/gl-matrix.js';
 import * as utils from '../utils/utils.js';
 
-// Cube object definition and functions
+/**
+ * Square definition and functions
+ */
 
 const {mat4} = glMatrix; // object destructuring to get mat4
 const vertices = [
@@ -23,7 +25,7 @@ export class Square {
     constructor(gl) {
 
         this.gl = gl;
-        // assign cube vetices
+        // assign square vetices
         this.vertices = vertices;
         // assign vertex normals
         this.normals = normals;
@@ -75,7 +77,7 @@ export class Square {
     }
 
     /**
-     * Applies a translation transformation to the cube's model matrix
+     * Applies a translation transformation to the square's model matrix
      * @param {array} transformation Array containing the new [x, y, z] position
      * @param {mat4} modelMatrix Model matrix to apply transformations to
      */
@@ -84,7 +86,7 @@ export class Square {
     }
 
     /**
-     * Applies a scaling transformation to the cube's model matrix
+     * Applies a scaling transformation to the square's model matrix
      * @param {array} transformation Array containing the new [x, y, z] scales
      * @param {mat4} modelMatrix Model matrix to apply transformations to
      */
@@ -93,18 +95,17 @@ export class Square {
     }
 
     /**
-     * Sets a new color attribute to cube vertices
+     * Sets a new color attribute to square vertices
      * @param {array} color Defines the new color attribute
      */
     setColor(color) {
         var gl = this.gl;
         var newColor = [];
-        for (let face = 0; face < 6; face++) {
-            let faceColor = color;
-            for (let vertex = 0; vertex < 6; vertex++) {
-                newColor.push(...faceColor);
-            }
+        let faceColor = color;
+        for (let vertex = 0; vertex < 6; vertex++) {
+            newColor.push(...faceColor);
         }
+        
         this.color = newColor;
         gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.color), gl.STATIC_DRAW);

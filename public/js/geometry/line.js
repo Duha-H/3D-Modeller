@@ -1,87 +1,32 @@
 import '../gl-setup/gl-matrix.js';
 import * as utils from '../utils/utils.js';
 
-// Cube object definition and functions
+/**
+ * Line definition and functions
+ */
 
 const {mat4} = glMatrix; // object destructuring to get mat4
 const vertices = [
-    // Front
-     1,  0.5,  1,
-     1, -0.5,  1,
-    -1,  0.5,  1,
-    -1,  0.5,  1,
-     1, -0.5,  1,
-    -1, -0.5,  1,
-    
-    // Left
-    -1,  0.5,  1,
-    -1, -0.5,  1,
-    -1,  0.5, -1,
-    -1,  0.5, -1,
-    -1, -0.5,  1,
-    -1, -0.5, -1,
-
-    // Back
-    -1,  0.5, -1,
-    -1, -0.5, -1,
-     1,  0.5, -1,
-     1,  0.5, -1,
-    -1, -0.5, -1,
-     1, -0.5, -1,
-
-    // Right
-     1,  0.5, -1,
-     1, -0.5, -1,
-     1,  0.5,  1,
-     1,  0.5,  1,
-     1, -0.5,  1,
-     1, -0.5, -1,
-
-    // Top
-     1,  0.5,  1,
-     1,  0.5, -1,
-    -1,  0.5,  1,
-    -1,  0.5,  1,
-     1,  0.5, -1,
-    -1,  0.5, -1,
-
-    // Bottom
-     1, -0.5,  1,
-     1, -0.5, -1,
-    -1, -0.5,  1,
-    -1, -0.5,  1,
-     1, -0.5, -1,
-    -1, -0.5, -1
-
+     0,  0,  1,     // START
+     0,  0, -1      // END
 ];
 
 const normals = [
-    ...utils.copyArray([ 0,  0,  1], 6),  // FRONT
-    ...utils.copyArray([-1,  0,  0], 6),  // LEFT
-    ...utils.copyArray([ 0,  0, -1], 6),  // BACK
-    ...utils.copyArray([ 1,  0,  0], 6),  // RIGHT
-    ...utils.copyArray([ 0,  1,  0], 6),  // TOP
-    ...utils.copyArray([ 0, -1,  0], 6),  // BOTTOM
+    ...utils.copyArray([ 0,  1,  0], 2)  // FRONT
 ];
 
-export class Cube {
+export class Line {
 
     constructor(gl) {
 
         this.gl = gl;
-        // assign cube vetices
+        // assign start and end vertices
         this.vertices = vertices;
-        // assign vertex normals
+        // assign normal (probably not necessary?)
         this.normals = normals;
-        
-        // generate random face colors
-        this.color = [];
-        let faceColor = utils.randomColor();
-        for (let face = 0; face < 6; face++) {
-            for (let vertex = 0; vertex < 6; vertex++) {
-                this.color.push(...faceColor);
-            }
-        }
+
+        this.color = [0, 0.1, 0.8,
+                      0, 0.1, 0.8];
 
         // create and bind vertex and color buffers
         this.vertexBuffer = gl.createBuffer();
@@ -93,12 +38,11 @@ export class Cube {
         this.normalBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.normals), gl.STATIC_DRAW);
-    
     }
 
     /**
      * Activates the given vertex attribute arrays, and draws bound vertices
-     * @param {*} attribLocations Renderer attribute locations
+     * @param {*} attribLocations renderer attribute locations
      */
     draw(attribLocations) {
         var gl = this.gl;
@@ -118,11 +62,11 @@ export class Cube {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
         gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, 0, 0);
 
-        gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length / 3);
+        gl.drawArrays(gl.LINES, 0, this.vertices.length / 3);
     }
 
     /**
-     * Applies a translation transformation to the cube's model matrix
+     * Applies a translation transformation to the line's model matrix
      * @param {array} transformation Array containing the new [x, y, z] position
      * @param {mat4} modelMatrix Model matrix to apply transformations to
      */
@@ -131,7 +75,7 @@ export class Cube {
     }
 
     /**
-     * Applies a scaling transformation to the cube's model matrix
+     * Applies a scaling transformation to the line's model matrix
      * @param {array} transformation Array containing the new [x, y, z] scales
      * @param {mat4} modelMatrix Model matrix to apply transformations to
      */
@@ -140,7 +84,7 @@ export class Cube {
     }
 
     /**
-     * Applies a rotation transformation to the cube's model matrix
+     * Applies a rotation transformation to the line's model matrix
      * @param {Number} angle Angle of rotation in radians
      * @param {array} axis Array defining the axis of rotation
      * @param {mat4} modelMatrix Model matrix to apply transformations to
@@ -150,35 +94,18 @@ export class Cube {
     }
 
     /**
-     * Sets a new color attribute to cube vertices
+     * Sets a new color attribute to line vertices
      * @param {array} color Defines the new color attribute
      */
     setColor(color) {
         var gl = this.gl;
         var newColor = [];
-        for (let face = 0; face < 6; face++) {
-            let faceColor = color;
-            for (let vertex = 0; vertex < 6; vertex++) {
-                newColor.push(...faceColor);
-            }
+        let faceColor = color;
+        for (let vertex = 0; vertex < 2; vertex++) {
+            newColor.push(...faceColor);
         }
         this.color = newColor;
         gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.color), gl.STATIC_DRAW);
     }
-
-    /**
-     * 
-     */
-    getBoundingBox() {
-
-    }
 }
-
-
-
-
-
-
-
-//export { Cube };

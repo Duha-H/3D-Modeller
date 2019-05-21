@@ -15,6 +15,10 @@ var hAngle; // horizontal angle
 var vAngle;   // vertical angle
 var diff;
 var orbit = true;
+var extrude = false;
+var zoom = true;
+var translate = false;
+var scale = false;
 
 /**
  * Sets up window and canvas event listeners and applies events to target scene
@@ -87,24 +91,105 @@ function keyboardHandler(e) {
     var keyCode = e.keyCode;
 
     switch (keyCode) {
+        case 37:    // Left Arrow
+            if (translate) { // translate mode
+                linkedScene.buildings[linkedScene.currBldg].posX--;
+                linkedScene.draw();
+            }
+            if (scale && linkedScene.buildings[linkedScene.currBldg].scaleX > 1) {    // scale mode
+                linkedScene.buildings[linkedScene.currBldg].scaleX--;
+                linkedScene.draw();
+            }
+            break;
+
         case 38:    // Up Arrow
-            camDistance -= 0.5; // zoom in
-            // update scene
-            linkedScene.updateCamera(vAngle, hAngle, camDistance);
+            if (zoom) {     // zoom mode
+                camDistance -= 0.5; // zoom in
+                linkedScene.updateCamera(vAngle, hAngle, camDistance);
+            }
+            if (extrude) {  // extrude mode
+                linkedScene.buildings[linkedScene.currBldg].height++;
+                linkedScene.draw();
+            }
+            if (translate) { // translate mode
+                linkedScene.buildings[linkedScene.currBldg].posZ--;
+                linkedScene.draw();
+            }
+            if (scale) {    // scale mode
+                linkedScene.buildings[linkedScene.currBldg].scaleZ++;
+                linkedScene.draw();
+            }
             break;
         
+        case 39:    // Right Arrow
+            if (translate) { // translate mode
+                linkedScene.buildings[linkedScene.currBldg].posX++;
+                linkedScene.draw();
+            }
+            if (scale) {    // scale mode
+                linkedScene.buildings[linkedScene.currBldg].scaleX++;
+                linkedScene.draw();
+            }
+            break;
+
         case 40:    // Down Arrow
-            camDistance += 0.5; // zoom out
-            // update scene
-            linkedScene.updateCamera(vAngle, hAngle, camDistance);
+            if (zoom) {     // zoom mode
+                camDistance += 0.5; // zoom out
+                linkedScene.updateCamera(vAngle, hAngle, camDistance);
+            }
+            if (extrude && linkedScene.buildings[linkedScene.currBldg].height > 1) {  // extrude mode
+                linkedScene.buildings[linkedScene.currBldg].height--;
+                linkedScene.draw();
+            }
+            if (translate) { // translate mode
+                linkedScene.buildings[linkedScene.currBldg].posZ++;
+                linkedScene.draw();
+            }
+            if (scale && linkedScene.buildings[linkedScene.currBldg].scaleZ > 1) { // scale mode
+                linkedScene.buildings[linkedScene.currBldg].scaleZ--;
+                linkedScene.draw();
+            }
+            break;
+        
+        case 69:    // 'e'
+            extrude = true;
+            zoom = translate = scale = false;
+            showSnackbar("Extrude mode");
+            break;
+        
+        case 78:    // 'n'
+            linkedScene.addNewBuilding();
+            linkedScene.draw();
             break;
         
         case 79:    // 'o'
             orbit = !orbit; // turn camera orbitting on/off 
             var state = orbit ? "on" : "off";
-            showSnackbar("orbit " + state + "!");
+            showSnackbar(`orbit ${state}!`);
             break;
         
+        case 71:    // 'g'
+            linkedScene.toggleGrid();   // show/hide scene grid
+            break;
+
+        case 83:    // 's'
+            scale = true;
+            zoom = extrude = translate = false;
+            showSnackbar("Scale mode");
+            break;
+
+        case 86:    // 'v'
+            translate = true;
+            zoom = extrude = scale = false;
+            showSnackbar("Translate mode");
+            break;
+        
+        case 90:    // 'z'
+            zoom = true;
+            extrude = translate = scale = false;
+            showSnackbar("Zoom mode");
+            break;
+
         default:
             break;
     }
@@ -120,9 +205,7 @@ function showSnackbar(message) {
     snackbar.className = "show";
 
     // remove snackbar after 3 seconds
-    setTimeout(() => {
-        snackbar.className = "";
-    }, 3000)
+    setTimeout(() => { snackbar.className = "" }, 3000);
 }
 
 /**

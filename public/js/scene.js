@@ -1,7 +1,10 @@
 import { Cube } from './models/cube.js';
-import { Square } from './models/square.js';
+import { Square } from './geometry/square.js';
 import { Camera } from './scene-objects/camera.js';
 import { degToRad } from './utils/utils.js';
+import { Line } from './geometry/line.js';
+import { Grid } from './geometry/grid.js';
+import { Building } from './models/building.js';
 
 
 /**
@@ -27,8 +30,12 @@ export class Scene {
         this.camera = this.setupCamera();
 
         // create scene objects
+        this.grid = new Grid(this.gl, 100, 100, 2);
+        this.showGrid = true;
         this.base = new Cube(this.gl);
         this.cubes = this.createCubes();
+        this.buildings = [new Building(this.gl)];
+        this.currBldg = 0; // currently active building
     }
 
 
@@ -42,7 +49,7 @@ export class Scene {
         camera.setPerspective(degToRad(60),
             this.vWidth/this.vHeight,
             1,
-            100
+            150
         );
 
         camera.setView();
@@ -61,13 +68,20 @@ export class Scene {
         this.draw();
     }
 
+    /**
+     * Toggle displaying grid on and off
+     */
+    toggleGrid() {
+        this.showGrid = !this.showGrid;
+        this.draw();
+    }
+
 
     /**
      * Creates objects used in this particular scene
      */
     createCubes() {
-        //base = new Cube(gl);
-        //var cube = new Cube(gl);
+        
         var cubes = [];
         for(var j = 0; j < 16; j++) {
             let newCube = new Cube(this.gl);
@@ -77,6 +91,14 @@ export class Scene {
         return cubes;
     }
 
+    /**
+     * Add new building to scene
+     */
+    addNewBuilding() {
+        var building = new Building(this.gl);
+        this.buildings.push(building);
+        this.currBldg++;
+    }
 
     /**
      * Apply transformations and draw scene objects
@@ -92,7 +114,7 @@ export class Scene {
         // draw base
         let modelMatrix = mat4.create();
         this.base.translate([0, -1, 0], modelMatrix);
-        this.base.scale([15, 0.08, 15], modelMatrix);
+        this.base.scale([50, 0.08, 50], modelMatrix);
 
         mat4.multiply(modelViewMatrix, this.camera.viewMatrix, modelMatrix);
         mat4.invert(normalMatrix, modelViewMatrix);
@@ -102,34 +124,22 @@ export class Scene {
         this.gl.uniformMatrix4fv(this.renderer.uniformLocs.normal, false, normalMatrix);
 
         this.base.setColor([1, 1, 1]);
-        this.base.draw(this.renderer.attribLocs.position, this.renderer.attribLocs.color, this.renderer.attribLocs.normal);
+        this.base.draw(this.renderer.attribLocs);
 
-        // draw blocks
-        var currCube = 0;
-        for(var i = -1; i < 3; i++) {
-            for(var j = -1; j < 3; j++) {
-                
-                // create model matrix for object
-                let modelMatrix = mat4.create(); 
-                // apply object transformations
-                this.cubes[currCube].translate([i*3, 0, j*3], modelMatrix);
-                this.cubes[currCube].scale([1, 1, 1], modelMatrix);
-                this.cubes[currCube].setColor([0.5, 0.8, 0.5]);       
+        
+        // draw grid
+        if (this.showGrid)
+            this.grid.draw(this.renderer.uniformLocs, this.renderer.attribLocs);
 
-                // create normals matrix
-                let normalMatrix = mat4.create();
-                mat4.multiply(modelViewMatrix, this.camera.viewMatrix, modelMatrix);
-                mat4.invert(normalMatrix, modelViewMatrix);
-                mat4.transpose(normalMatrix, normalMatrix);
-
-                // specify matrix values for shader program uniforms
-                this.gl.uniformMatrix4fv(this.renderer.uniformLocs.model, false, modelMatrix);
-                this.gl.uniformMatrix4fv(this.renderer.uniformLocs.normal, false, normalMatrix);
-
-                // draw object
-                this.cubes[currCube].draw(this.renderer.attribLocs.position, this.renderer.attribLocs.color, this.renderer.attribLocs.normal);
-                currCube++;
-            }
+    
+        // draw buildings
+        for(var i = 0; i < this.buildings.length; i++) {
+            // set color of active building
+            if(i == this.currBldg) this.buildings[i].setColor([0.5, 0.8, 0.7]);
+            else this.buildings[i].setColor([0.5, 0.8, 0.5]);
+            // draw building
+            this.buildings[i].draw(this.renderer.uniformLocs, this.renderer.attribLocs, this.camera.viewMatrix);
         }
+
     }
 }
