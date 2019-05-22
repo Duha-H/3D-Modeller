@@ -28,7 +28,7 @@ export class Building {
             0: new Cube(this.gl),
             1: new RoundedBlock(this.gl)
         };
-        this.floorType = 0; // default floor type
+        this.floorType = 1; // default floor type
 
     }
 
@@ -86,8 +86,8 @@ export class Building {
         // apply building scale and color (common attributes)
         floor.setHeight(0.5); // reduce default floor height
         floor.setColor(this.color);
-        mat4.scale(modelMatrix, modelMatrix, [this.scaleX, 1, this.scaleZ]);
         mat4.translate(modelMatrix, modelMatrix, [this.posX, -1, this.posZ]);
+        mat4.scale(modelMatrix, modelMatrix, [this.scaleX, 1, this.scaleZ]);
         
         
         for(let i = 0; i < this.height; i++) {
