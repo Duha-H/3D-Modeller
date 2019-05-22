@@ -191,7 +191,7 @@ function keyboardHandler(e) {
             showSnackbar(`orbit ${state}!`);
             break;
         
-        case 80:
+        case 80:    // 'p'
             pan = true;
             zoom = extrude = translate = scale = false;
             showSnackbar("Camera Pan mode");

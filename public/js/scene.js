@@ -150,7 +150,6 @@ export class Scene {
             if (i == this.currBldg) this.buildings[i].setColor([0.5, 0.8, 0.7]);
             else this.buildings[i].setColor([0.5, 0.8, 0.5]);
             // draw building
-            //this.buildings[i].changeType(1);
             this.buildings[i].draw(this.renderer.uniformLocs, this.renderer.attribLocs, this.camera.viewMatrix);
         }
 
