@@ -4,12 +4,12 @@ import { degToRad } from '../utils/utils.js';
 
 const {mat4} = glMatrix; // object destructuring to get mat4
 // default camera position and reference attributes
-const CAM_DISTANCE = 20;
+const CAM_DISTANCE = 40;
 const CAM_X = 4, CAM_Y = 5, CAM_Z = 7;
 const REF_X = 0, REF_Y = 0, REF_Z = 0;
 const UP_X = 0, UP_Y = 1, UP_Z = 0;
-const H_ANGLE = 0; // horizontal angle
-const V_ANGLE = 25; // vertical angle
+const H_ANGLE = 45; // horizontal angle
+const V_ANGLE = 45; // vertical angle
 const RATE = 1;     // camera orbitting rate
 
 /**
@@ -136,7 +136,6 @@ export class Camera {
         const cameraZ = CAM_DISTANCE * Math.cos(degToRad(V_ANGLE)) * Math.sin(degToRad(H_ANGLE));
 
         this.updatePosition([cameraX, cameraY, cameraZ]);
-
     }
 
     /**

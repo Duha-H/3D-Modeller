@@ -1,8 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap');
 
 * {
-    border-radius: 15px;
-
+    border-radius: 10px;
 }
 
 html {
@@ -10,11 +9,11 @@ html {
     color: white;
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 800;
-    font-size: 13pt;
+    font-size: 10pt;
 }
 
 h1 {
-    color: black;
+    color: white;
     text-align: center;
     padding-top: 15px;
     font-family: Consolas;
@@ -41,10 +40,10 @@ p {
 }
 
 #controls {
-    min-width: 200px;
-    width: 300px;
-    background: rgb(189, 188, 188);
-    color: rgb(20, 23, 37);
+    min-width: 120px;
+    width: 220px;
+    color: white;
+    border: 2px solid white;
     margin: 0 20px 0;
     padding: 5px;
     display: flex;
@@ -54,7 +53,8 @@ p {
 
 #content {
     width: 100%;
-    height: 920px;
+    height: 680px;
+    min-height: 400px;
     display: flex;
     flex-direction: row;
     text-align: center;
@@ -64,19 +64,22 @@ p {
 
 #canvas {
     margin: 0 20px 0 0;
+    min-width: 500px;
+    min-height: 100px;
 }
 
 #snackbar {
     position: fixed;
     bottom: 15px;
-    right: 15px;
-    background: rgb(189, 188, 188);
+    right: 20px;
+    background: rgba(116, 171, 175, 0.8);
     color: white;
+    border-radius: 5px;
     text-align: center;
-    min-width: 180px;
-    min-height: 40px;
+    min-width: 100px;
+    min-height: 20px;
     font-family: 'IBM Plex Mono', monospace;
-    line-height: 40px;
+    line-height: 20px;
     padding: 0px 20px 0px;
     visibility: hidden;
 }

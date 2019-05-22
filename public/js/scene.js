@@ -11,9 +11,17 @@ import { RoundedBlock } from './models/roundedBlock.js';
  */
 
 const {mat4} = glMatrix; // object destructuring to get mat4
+const FOV = degToRad(60);
+const NEAR = 1;
+const FAR = 150;
+const MODES = {
+    DARK: [0.15, 0.15, 0.15],
+    LIGHT: [1, 1, 1]
+}
+
 var modelViewMatrix = mat4.create();
-var projectionMatrix = mat4.create();
 var normalMatrix = mat4.create();
+var modelMatrix = mat4.create();
 
 export class Scene {
 
@@ -22,10 +30,12 @@ export class Scene {
         this.gl = canvas.getContext('webgl');
         this.canvas = canvas;
         this.renderer = renderer;
+        this.mode = MODES.DARK;
 
         // set up camera
         this.vWidth = canvas.clientWidth;   // viewport width
         this.vHeight = canvas.clientHeight; // viewport height
+        this.aspectRatio = this.vWidth/this.vHeight;
         this.camera = this.setupCamera();
 
         // create scene objects
@@ -44,13 +54,7 @@ export class Scene {
     setupCamera() {
         
         var camera = new Camera();
-
-        camera.setPerspective(degToRad(60),
-            this.vWidth/this.vHeight,
-            1,
-            150
-        );
-
+        camera.setPerspective(FOV, this.vWidth/this.vHeight, NEAR, FAR);
         camera.setView();
 
         return camera;
@@ -64,6 +68,15 @@ export class Scene {
      */
     updateCamera(vAngle, hAngle, distance) {
         this.camera.updateView(vAngle, hAngle, distance);
+        this.draw();
+    }
+
+    /**
+     * Updates aspect ratio of context viewport
+     * @param {Number} aspectRatio New viewport aspect ratio
+     */
+    updateViewport(aspectRatio) {
+        this.camera.setPerspective(FOV, aspectRatio, NEAR, FAR);
         this.draw();
     }
 
@@ -111,9 +124,10 @@ export class Scene {
         this.gl.uniformMatrix4fv(this.renderer.uniformLocs.projection, false, this.camera.projectionMatrix);
         
         // draw base
-        let modelMatrix = mat4.create();
+        modelMatrix = mat4.create();
         this.base.translate([0, -1.1, 0], modelMatrix);
-        this.base.scale([50, 0.08, 50], modelMatrix);
+        this.base.scale([50, 1, 50], modelMatrix);
+        this.base.setHeight(0.08);
 
         mat4.multiply(modelViewMatrix, this.camera.viewMatrix, modelMatrix);
         mat4.invert(normalMatrix, modelViewMatrix);
@@ -122,7 +136,7 @@ export class Scene {
         this.gl.uniformMatrix4fv(this.renderer.uniformLocs.model, false, modelMatrix);
         this.gl.uniformMatrix4fv(this.renderer.uniformLocs.normal, false, normalMatrix);
 
-        this.base.setColor([1, 1, 1]);
+        this.base.setColor(this.mode);
         this.base.draw(this.renderer.attribLocs);
 
         

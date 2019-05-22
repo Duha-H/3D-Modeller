@@ -25,8 +25,8 @@ export class Line {
         // assign normal (probably not necessary?)
         this.normals = normals;
 
-        this.color = [0, 0.1, 0.8,
-                      0, 0.1, 0.8];
+        this.color = [0, 0.8, 0.8,
+                      0, 0.8, 0.8];
 
         // create and bind vertex and color buffers
         this.vertexBuffer = gl.createBuffer();

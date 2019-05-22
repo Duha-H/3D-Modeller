@@ -46,6 +46,7 @@ export function EventHandler(scene) {
     canvas.addEventListener("mouseout", mouseUp, false);
     //window.addEventListener("click", onClick, false);
     window.addEventListener("keydown", keyboardHandler, false);
+    window.addEventListener("resize", resizeViewport, false);
 }
 
 
@@ -230,6 +231,16 @@ function showSnackbar(message) {
 
     // remove snackbar after 3 seconds
     setTimeout(() => { snackbar.className = "" }, 3000);
+}
+
+/**
+ * Handles resizing canvas on window resize event
+ */
+function resizeViewport() {
+    linkedScene.vWidth = canvas.clientWidth;
+    linkedScene.vHeight = canvas.clientHeight;
+    var ratio = linkedScene.vWidth / linkedScene.vHeight;
+    linkedScene.updateViewport(ratio);
 }
 
 /**
