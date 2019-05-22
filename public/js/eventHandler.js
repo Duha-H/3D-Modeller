@@ -1,4 +1,4 @@
-import { multMatVec4 } from './utils/utils.js';
+import * as utils from './utils/utils.js';
 
 /**
  * Event handling module
@@ -14,9 +14,11 @@ var camDistance;
 var hAngle; // horizontal angle
 var vAngle;   // vertical angle
 var diff;
+var refX, refY, refZ;
 var orbit = true;
 var extrude = false;
 var zoom = true;
+var pan = false;
 var translate = false;
 var scale = false;
 
@@ -33,6 +35,9 @@ export function EventHandler(scene) {
     hAngle = linkedScene.camera.hAngle;
     vAngle = linkedScene.camera.vAngle;
     diff = linkedScene.camera.rate;
+    refX = linkedScene.camera.reference[0];
+    refY = linkedScene.camera.reference[1];
+    refZ = linkedScene.camera.reference[2];
 
     // set up event listeners
     canvas.addEventListener("mousedown", mouseDown, false);
@@ -74,7 +79,7 @@ function mouseMove(e) {
         dx = (e.pageX - oldX);
         dy = (e.pageY - oldY);
         hAngle += dx * diff;
-        vAngle += dy * diff;
+        vAngle = utils.clamp(vAngle + diff * dy, 5, 85); // maintain angle between 5 and 85 degrees
         oldX = e.pageX;
         oldY = e.pageY;
         // update scene
@@ -96,8 +101,12 @@ function keyboardHandler(e) {
                 linkedScene.buildings[linkedScene.currBldg].posX--;
                 linkedScene.draw();
             }
-            if (scale && linkedScene.buildings[linkedScene.currBldg].scaleX > 1) {    // scale mode
-                linkedScene.buildings[linkedScene.currBldg].scaleX--;
+            if (scale && linkedScene.buildings[linkedScene.currBldg].scaleX > 0.5) {    // scale mode
+                linkedScene.buildings[linkedScene.currBldg].scaleX-=0.5;
+                linkedScene.draw();
+            }
+            if (pan) {  // camera panning mode
+                linkedScene.camera.panCamera('z', 1);
                 linkedScene.draw();
             }
             break;
@@ -116,7 +125,7 @@ function keyboardHandler(e) {
                 linkedScene.draw();
             }
             if (scale) {    // scale mode
-                linkedScene.buildings[linkedScene.currBldg].scaleZ++;
+                linkedScene.buildings[linkedScene.currBldg].scaleZ+=0.5;
                 linkedScene.draw();
             }
             break;
@@ -127,7 +136,11 @@ function keyboardHandler(e) {
                 linkedScene.draw();
             }
             if (scale) {    // scale mode
-                linkedScene.buildings[linkedScene.currBldg].scaleX++;
+                linkedScene.buildings[linkedScene.currBldg].scaleX+=0.5;
+                linkedScene.draw();
+            }
+            if (pan) {  // camera panning mode
+                linkedScene.camera.panCamera('z', -1);
                 linkedScene.draw();
             }
             break;
@@ -145,48 +158,59 @@ function keyboardHandler(e) {
                 linkedScene.buildings[linkedScene.currBldg].posZ++;
                 linkedScene.draw();
             }
-            if (scale && linkedScene.buildings[linkedScene.currBldg].scaleZ > 1) { // scale mode
-                linkedScene.buildings[linkedScene.currBldg].scaleZ--;
+            if (scale && linkedScene.buildings[linkedScene.currBldg].scaleZ > 0.5) { // scale mode
+                linkedScene.buildings[linkedScene.currBldg].scaleZ-=0.5;
                 linkedScene.draw();
             }
             break;
         
         case 69:    // 'e'
             extrude = true;
-            zoom = translate = scale = false;
+            zoom = translate = scale = pan = false;
             showSnackbar("Extrude mode");
             break;
-        
+
+        case 70:    // 'f'
+            linkedScene.buildings[linkedScene.currBldg].changeType();
+            linkedScene.draw();
+            break;
+
+        case 71:    // 'g'
+            linkedScene.toggleGrid();   // show/hide scene grid
+            break;
+
         case 78:    // 'n'
             linkedScene.addNewBuilding();
             linkedScene.draw();
             break;
         
         case 79:    // 'o'
-            orbit = !orbit; // turn camera orbitting on/off 
+            orbit = !orbit; // toggle camera orbitting on/off 
             var state = orbit ? "on" : "off";
             showSnackbar(`orbit ${state}!`);
             break;
         
-        case 71:    // 'g'
-            linkedScene.toggleGrid();   // show/hide scene grid
+        case 80:
+            pan = true;
+            zoom = extrude = translate = scale = false;
+            showSnackbar("Camera Pan mode");
             break;
 
         case 83:    // 's'
             scale = true;
-            zoom = extrude = translate = false;
+            zoom = extrude = translate = pan = false;
             showSnackbar("Scale mode");
             break;
 
         case 86:    // 'v'
             translate = true;
-            zoom = extrude = scale = false;
+            zoom = extrude = scale = pan = false;
             showSnackbar("Translate mode");
             break;
         
         case 90:    // 'z'
             zoom = true;
-            extrude = translate = scale = false;
+            extrude = translate = scale = pan = false;
             showSnackbar("Zoom mode");
             break;
 
@@ -241,9 +265,9 @@ function onClick(e) {
     var viewProjection = mat4.multiply(mat4.create(), camera.projectionMatrix, camera.viewMatrix);
     var viewProjectionInverse = mat4.invert(mat4.create(), viewProjection);
     var viewInverse = mat4.invert(mat4.create(), camera.viewMatrix);
-    var rayEYE = multMatVec4(viewInverse, vec4.fromValues(rayCLIP[0], rayCLIP[1], rayCLIP[2], 0.0));
+    var rayEYE = utilsmultMatVec4(viewInverse, vec4.fromValues(rayCLIP[0], rayCLIP[1], rayCLIP[2], 0.0));
     //var rayWOR = multiply(projectionInverse, rayEYE);
-    var rayWOR = multMatVec4(viewProjectionInverse, rayCLIP);
+    var rayWOR = utils.multMatVec4(viewProjectionInverse, rayCLIP);
     rayWOR = rayWOR.slice(0, 3);
     //rayWOR = vec3.normalize(vec3.create(), rayWOR);
     console.log(rayWOR);

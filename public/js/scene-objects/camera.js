@@ -8,7 +8,7 @@ const CAM_DISTANCE = 20;
 const CAM_X = 4, CAM_Y = 5, CAM_Z = 7;
 const REF_X = 0, REF_Y = 0, REF_Z = 0;
 const UP_X = 0, UP_Y = 1, UP_Z = 0;
-const H_ANGLE = 45; // horizontal angle
+const H_ANGLE = 0; // horizontal angle
 const V_ANGLE = 25; // vertical angle
 const RATE = 1;     // camera orbitting rate
 
@@ -64,6 +64,28 @@ export class Camera {
     updateUpVector(newUpVector) {
         this.upVector = newUpVector;
         mat4.lookAt(this.viewMatrix, this.position, this.reference, this.upVector);
+    }
+
+    /**
+     * Pan/move camera around a given scene (update position and reference)
+     * @param {String} direction Direction of camera panning
+     * @param {Number} mag Magnitude of movement
+     */
+    panCamera(direction, mag) {
+        var newPosition = this.position;
+        var newReference = this.reference;
+        if (direction === 'x') { // pan in x direction
+            newPosition[0] += mag;  // update x position
+            newReference[0] += mag; // update x reference
+            this.updatePosition(newPosition);
+            this.updateReference(newReference);
+        }
+        if (direction === 'z') { // pan in x direction
+            newPosition[2] += mag;  // update z position
+            newReference[2] += mag; // update z reference
+            this.updatePosition(newPosition);
+            this.updateReference(newReference);
+        }
     }
 
     /**

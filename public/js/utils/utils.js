@@ -70,3 +70,7 @@ export function multMatVec4(mat, vec) {
     return result;
 
 }
+
+export function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
