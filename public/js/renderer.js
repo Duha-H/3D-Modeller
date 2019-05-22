@@ -55,3 +55,7 @@ Renderer.prototype.newShaderProgram = (vertexShaderCode, fragmentShaderCode) => 
     console.log("TESTING RENDERER");
     // TODO: implement
 }
+
+Renderer.prototype.soup = () => {
+    return 42;
+}

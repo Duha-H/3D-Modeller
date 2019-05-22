@@ -1,10 +1,9 @@
 import { Cube } from './models/cube.js';
-import { Square } from './geometry/square.js';
 import { Camera } from './scene-objects/camera.js';
 import { degToRad } from './utils/utils.js';
-import { Line } from './geometry/line.js';
 import { Grid } from './geometry/grid.js';
 import { Building } from './models/building.js';
+import { RoundedBlock } from './models/roundedBlock.js';
 
 
 /**
@@ -113,7 +112,7 @@ export class Scene {
         
         // draw base
         let modelMatrix = mat4.create();
-        this.base.translate([0, -1, 0], modelMatrix);
+        this.base.translate([0, -1.1, 0], modelMatrix);
         this.base.scale([50, 0.08, 50], modelMatrix);
 
         mat4.multiply(modelViewMatrix, this.camera.viewMatrix, modelMatrix);
@@ -131,13 +130,13 @@ export class Scene {
         if (this.showGrid)
             this.grid.draw(this.renderer.uniformLocs, this.renderer.attribLocs);
 
-    
         // draw buildings
         for(var i = 0; i < this.buildings.length; i++) {
             // set color of active building
-            if(i == this.currBldg) this.buildings[i].setColor([0.5, 0.8, 0.7]);
+            if (i == this.currBldg) this.buildings[i].setColor([0.5, 0.8, 0.7]);
             else this.buildings[i].setColor([0.5, 0.8, 0.5]);
             // draw building
+            //this.buildings[i].changeType(1);
             this.buildings[i].draw(this.renderer.uniformLocs, this.renderer.attribLocs, this.camera.viewMatrix);
         }
 

@@ -4,54 +4,54 @@ import * as utils from '../utils/utils.js';
 // Cube object definition and functions
 
 const {mat4} = glMatrix; // object destructuring to get mat4
-const vertices = [
+const vertices = [  // cube transformation origin (0,0,0) is on the bottom face
     // Front
-     1,  0.5,  1,
-     1, -0.5,  1,
-    -1,  0.5,  1,
-    -1,  0.5,  1,
-     1, -0.5,  1,
-    -1, -0.5,  1,
+     1,  2,  1,
+     1,  0,  1,
+    -1,  2,  1,
+    -1,  2,  1,
+     1,  0,  1,
+    -1,  0,  1,
     
     // Left
-    -1,  0.5,  1,
-    -1, -0.5,  1,
-    -1,  0.5, -1,
-    -1,  0.5, -1,
-    -1, -0.5,  1,
-    -1, -0.5, -1,
+    -1,  2,  1,
+    -1,  0,  1,
+    -1,  2, -1,
+    -1,  2, -1,
+    -1,  0,  1,
+    -1,  0, -1,
 
     // Back
-    -1,  0.5, -1,
-    -1, -0.5, -1,
-     1,  0.5, -1,
-     1,  0.5, -1,
-    -1, -0.5, -1,
-     1, -0.5, -1,
+    -1,  2, -1,
+    -1,  0, -1,
+     1,  2, -1,
+     1,  2, -1,
+    -1,  0, -1,
+     1,  0, -1,
 
     // Right
-     1,  0.5, -1,
-     1, -0.5, -1,
-     1,  0.5,  1,
-     1,  0.5,  1,
-     1, -0.5,  1,
-     1, -0.5, -1,
+     1,  2, -1,
+     1,  0, -1,
+     1,  2,  1,
+     1,  2,  1,
+     1,  0,  1,
+     1,  0, -1,
 
     // Top
-     1,  0.5,  1,
-     1,  0.5, -1,
-    -1,  0.5,  1,
-    -1,  0.5,  1,
-     1,  0.5, -1,
-    -1,  0.5, -1,
+     1,  2,  1,
+     1,  2, -1,
+    -1,  2,  1,
+    -1,  2,  1,
+     1,  2, -1,
+    -1,  2, -1,
 
     // Bottom
-     1, -0.5,  1,
-     1, -0.5, -1,
-    -1, -0.5,  1,
-    -1, -0.5,  1,
-     1, -0.5, -1,
-    -1, -0.5, -1
+     1,  0,  1,
+     1,  0, -1,
+    -1,  0,  1,
+    -1,  0,  1,
+     1,  0, -1,
+    -1,  0, -1
 
 ];
 
@@ -69,6 +69,7 @@ export class Cube {
     constructor(gl) {
 
         this.gl = gl;
+        this.height = 1;
         // assign cube vetices
         this.vertices = vertices;
         // assign vertex normals
@@ -165,6 +166,20 @@ export class Cube {
         this.color = newColor;
         gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.color), gl.STATIC_DRAW);
+    }
+
+    /**
+     * Adjust default block height
+     * @param {Number} h New block height
+     */
+    setHeight(newHeight) {
+        this.height = newHeight;
+        for(let i = 1; i < this.vertices.length; i+=3) {
+            this.vertices[i] = this.vertices[i] > 0 ? newHeight : this.vertices[i];
+        }
+        // update vertex buffer data
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
     }
 
     /**
