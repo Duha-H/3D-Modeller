@@ -15,8 +15,8 @@ const FOV = degToRad(60);
 const NEAR = 1;
 const FAR = 150;
 const MODES = {
-    DARK: [0.15, 0.15, 0.15],
-    LIGHT: [1, 1, 1]
+    DARK: [0.15, 0.15, 0.15],  // DARK
+    LIGHT: [0.7, 0.7, 0.7]            // LIGHT
 }
 
 var modelViewMatrix = mat4.create();
@@ -85,6 +85,14 @@ export class Scene {
      */
     toggleGrid() {
         this.showGrid = !this.showGrid;
+        this.draw();
+    }
+
+    /**
+     * Toggle color theme
+     */
+    toggleTheme() {
+        this.mode = this.mode == MODES.DARK ? MODES.LIGHT : MODES.DARK;
         this.draw();
     }
 

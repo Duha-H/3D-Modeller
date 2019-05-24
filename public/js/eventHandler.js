@@ -1,7 +1,7 @@
 import * as utils from './utils/utils.js';
 
 /**
- * Event handling module
+ * Event handling module for canvas-related events
  */
 
 var canvas;
@@ -14,13 +14,20 @@ var camDistance;
 var hAngle; // horizontal angle
 var vAngle;   // vertical angle
 var diff;
-var refX, refY, refZ;
 var orbit = true;
 var extrude = false;
 var zoom = true;
 var pan = false;
 var translate = false;
 var scale = false;
+const modes = {
+    scale: 83,
+    translate: 86,
+    extrude: 69,
+    zoom: 90,
+    pan: 80,
+    orbit: 79
+};
 
 /**
  * Sets up window and canvas event listeners and applies events to target scene
@@ -45,8 +52,11 @@ export function EventHandler(scene) {
     canvas.addEventListener("mousemove", mouseMove, false);
     canvas.addEventListener("mouseout", mouseUp, false);
     //window.addEventListener("click", onClick, false);
-    window.addEventListener("keydown", keyboardHandler, false);
+    window.addEventListener("keydown", (e) => {keyboardHandler(e.keyCode)}, false);
     window.addEventListener("resize", resizeViewport, false);
+    document.querySelector('input').addEventListener('change', toggleTheme, false);
+    
+    handleControlButtons();
 }
 
 
@@ -80,7 +90,7 @@ function mouseMove(e) {
         dx = (e.pageX - oldX);
         dy = (e.pageY - oldY);
         hAngle += dx * diff;
-        vAngle = utils.clamp(vAngle + diff * dy, 5, 85); // maintain angle between 5 and 85 degrees
+        vAngle = utils.clamp(vAngle + diff * dy, 1, 85); // maintain angle between 5 and 85 degrees
         oldX = e.pageX;
         oldY = e.pageY;
         // update scene
@@ -93,8 +103,8 @@ function mouseMove(e) {
  * Hanldes all keyboard events
  * @param {Event} e keyboard event
  */
-function keyboardHandler(e) {
-    var keyCode = e.keyCode;
+function keyboardHandler(keyCode) {
+    //var keyCode = e.keyCode;
 
     switch (keyCode) {
         case 37:    // Left Arrow
@@ -126,7 +136,7 @@ function keyboardHandler(e) {
                 linkedScene.draw();
             }
             if (scale) {    // scale mode
-                linkedScene.buildings[linkedScene.currBldg].scaleZ+=0.5;
+                linkedScene.buildings[linkedScene.currBldg].scaleZ += 0.5;
                 linkedScene.draw();
             }
             break;
@@ -137,7 +147,7 @@ function keyboardHandler(e) {
                 linkedScene.draw();
             }
             if (scale) {    // scale mode
-                linkedScene.buildings[linkedScene.currBldg].scaleX+=0.5;
+                linkedScene.buildings[linkedScene.currBldg].scaleX += 0.5;
                 linkedScene.draw();
             }
             if (pan) {  // camera panning mode
@@ -160,7 +170,7 @@ function keyboardHandler(e) {
                 linkedScene.draw();
             }
             if (scale && linkedScene.buildings[linkedScene.currBldg].scaleZ > 0.5) { // scale mode
-                linkedScene.buildings[linkedScene.currBldg].scaleZ-=0.5;
+                linkedScene.buildings[linkedScene.currBldg].scaleZ -= 0.5;
                 linkedScene.draw();
             }
             break;
@@ -168,7 +178,9 @@ function keyboardHandler(e) {
         case 69:    // 'e'
             extrude = true;
             zoom = translate = scale = pan = false;
-            showSnackbar("Extrude mode");
+            showSnackbar("Extrude Mode");
+            setInactive([modes.zoom, modes.translate, modes.scale, modes.pan]);
+            setActive(69);
             break;
 
         case 70:    // 'f'
@@ -178,6 +190,7 @@ function keyboardHandler(e) {
 
         case 71:    // 'g'
             linkedScene.toggleGrid();   // show/hide scene grid
+            toggleActive(71);
             break;
 
         case 78:    // 'n'
@@ -189,30 +202,39 @@ function keyboardHandler(e) {
             orbit = !orbit; // toggle camera orbitting on/off 
             var state = orbit ? "on" : "off";
             showSnackbar(`orbit ${state}!`);
+            toggleActive(79);
             break;
         
         case 80:    // 'p'
             pan = true;
             zoom = extrude = translate = scale = false;
-            showSnackbar("Camera Pan mode");
+            showSnackbar("Camera Pan Mode");
+            setInactive([modes.zoom, modes.translate, modes.scale, modes.extrude]);
+            setActive(80);
             break;
 
         case 83:    // 's'
             scale = true;
             zoom = extrude = translate = pan = false;
-            showSnackbar("Scale mode");
+            showSnackbar("Scale Mode");
+            setInactive([modes.zoom, modes.translate, modes.extrude, modes.pan]);
+            setActive(83);
             break;
 
         case 86:    // 'v'
             translate = true;
             zoom = extrude = scale = pan = false;
-            showSnackbar("Translate mode");
+            showSnackbar("Translate Mode");
+            setInactive([modes.zoom, modes.extrude, modes.scale, modes.pan]);
+            setActive(86);
             break;
         
         case 90:    // 'z'
             zoom = true;
             extrude = translate = scale = pan = false;
-            showSnackbar("Zoom mode");
+            showSnackbar("Zoom Mode");
+            setInactive([modes.extrude, modes.translate, modes.scale, modes.pan]);
+            setActive(90);
             break;
 
         default:
@@ -241,6 +263,66 @@ function resizeViewport() {
     linkedScene.vHeight = canvas.clientHeight;
     var ratio = linkedScene.vWidth / linkedScene.vHeight;
     linkedScene.updateViewport(ratio);
+}
+
+/**
+ * Toggle color theme of the page
+ */
+function toggleTheme() {
+    // adjust styling theme
+    var container = document.querySelector('body');
+    var newTheme = container.className.includes('dark') ? 'light' : 'dark';
+    container.className = `container ${newTheme}`;
+    //adjust canvas theme
+    linkedScene.toggleTheme();
+}
+
+/**
+ * Adds event listeners to all control panel buttons
+ */
+function handleControlButtons() {
+    // get control buttons
+    const ctrlButtons = document.querySelectorAll('.ctrl-key');
+    // bind event listeners
+    ctrlButtons.forEach( (element) => {
+        let id = element.id.substring(5);
+        let code = parseInt(id);
+        element.addEventListener('click', () => {
+            keyboardHandler(code);
+        }, false);
+
+    });
+}
+
+/**
+ * Sets a button class to 'active'
+ * @param {Number} id ID number of button to activate
+ */
+function setActive(id) {
+    document.getElementById('ctrl-' + id).className += ' active';
+}
+
+/**
+ * Sets button classes to inactive
+ * @param {array} idList List of IDs of buttons to deactivate
+ */
+function setInactive(idList) {
+    idList.forEach((id) => {
+        var button = document.getElementById(`ctrl-${id}`);
+        button.className = 'ctrl-key';
+    })
+}
+
+/**
+ * Toggles the activity class of a button
+ * @param {Number} id ID number of button to toggle 
+ */
+function toggleActive(id) {
+    var button = document.getElementById(`ctrl-${id}`);
+    if (button.className.includes('active'))
+        button.className = 'ctrl-key';
+    else
+        button.className += ' active';
 }
 
 /**

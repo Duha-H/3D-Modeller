@@ -28,7 +28,7 @@ export class Building {
             0: new Cube(this.gl),
             1: new RoundedBlock(this.gl)
         };
-        this.floorType = 1; // default floor type
+        this.floorType = 0; // default floor type
 
     }
 
@@ -63,7 +63,7 @@ export class Building {
      * @param {Number} newType Index of new building type (optional)
      */
     changeType(newType) {
-        if (newType)
+        if (newType)    // if a type is specified
             this.floorType = newType;
         else {
             const type = this.floorType + 1;

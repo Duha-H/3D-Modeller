@@ -84,7 +84,7 @@ export class Grid {
             let modelMatrix = mat4.create();
 
             lines[curr].rotate(degToRad(rotation), [0, 1, 0], modelMatrix);
-            lines[curr].translate([currSpacing, -0.91, 0], modelMatrix);
+            lines[curr].translate([currSpacing, -1, 0], modelMatrix);
             lines[curr].scale([0, 0, length], modelMatrix);
 
             this.gl.uniformMatrix4fv(modelLocation, false, modelMatrix);

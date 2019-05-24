@@ -3,9 +3,11 @@
 <head>
     <meta charset="utf-8">
     <!--<meta http-equiv="X-UA-Compatible" content="IE=edge">-->
-    <title>3D City Planner</title>
+    <title>3D City Visualizer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="./main.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="./css/main.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="./css/toggle.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="./css/snackbar.css">
     <script src="./main.js" type="module"></script>
     <script src="./js/gl-setup/gl-matrix-min.js" defer></script>
 
@@ -54,12 +56,31 @@
     </script>
 </head>
 
-<body class="container">
-    <div id="content">
+<body class="container dark">
+    <div id="header">
+        <h1 id="title">3D City Visualizer</h1>
+        <label class="slider">
+            <input type="checkbox" checked>
+            <span class="toggle"></span>
+        </label>
+    </div>
+    <div id="content" >
         <div id="controls">
-            <h3>Controls!</h3>
+            <h3>Controls</h3>
+            <div id="keys">
+                <button class="ctrl-key" id="ctrl-83" title="Scale (s)"><img id="ctrl-icon" src="./assets/icon_d_scale.png"/></button>
+                <button class="ctrl-key" id="ctrl-86" title="Translate (v)"><img id="ctrl-icon" src="./assets/icon_d_move.png"/></button>
+                <button class="ctrl-key" id="ctrl-69" title="Extrude (e)"><img id="ctrl-icon" src="./assets/icon_d_extrude.png"/></button>
+                <button class="ctrl-key" id="ctrl-90" title="Zoom (z)"><img id="ctrl-icon" src="./assets/icon_d_zoom.png"/></button>
+                <button class="ctrl-key" id="ctrl-80" title="Pan (p)"><img id="ctrl-icon" src="./assets/icon_d_scale.png"/></button>
+                <button class="ctrl-key active" id="ctrl-79" title="Orbit (o)"><img id="ctrl-icon" src="./assets/icon_d_orbit.png"/></button>
+                <button class="ctrl-key" id="ctrl-78" title="New (n)"><img id="ctrl-icon" src="./assets/icon_d_new.png"/></button>
+                <button class="ctrl-key" id="ctrl-70" title="Change Style (f)"><img id="ctrl-icon" src="./assets/icon_d_change.png"/></button>
+                <button class="ctrl-key active" id="ctrl-71" title="Grid (g)"><img id="ctrl-icon" src="./assets/icon_d_grid.png"/></button>
+            </div>
+            
         </div>
-        <canvas id="canvas" width="1500" height="650">This browser does not seem to support WebGL</canvas>
+        <canvas id="canvas" width="1500" height="630">This browser does not seem to support WebGL</canvas>
     </div>
     <div id="snackbar"></div>
 </body>
