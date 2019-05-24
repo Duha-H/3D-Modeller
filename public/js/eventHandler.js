@@ -42,9 +42,6 @@ export function EventHandler(scene) {
     hAngle = linkedScene.camera.hAngle;
     vAngle = linkedScene.camera.vAngle;
     diff = linkedScene.camera.rate;
-    refX = linkedScene.camera.reference[0];
-    refY = linkedScene.camera.reference[1];
-    refZ = linkedScene.camera.reference[2];
 
     // set up event listeners
     canvas.addEventListener("mousedown", mouseDown, false);
