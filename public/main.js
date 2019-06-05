@@ -11,11 +11,23 @@ var eventHandler;
 
 
 function main() {
-    // run GL set up code
+    // create renderer and shader programs
     renderer = new Renderer(canvas);
+    // DISPLAY shader program code
+    let vertexShaderCode = document.getElementById("vertex-shader").firstChild.nodeValue;
+    let fragmentShaderCode = document.getElementById("fragment-shader").firstChild.nodeValue;
+    renderer.newShaderProgram(vertexShaderCode, fragmentShaderCode, 'DISPLAY');
+    // SELECT shader program code
+    vertexShaderCode = document.getElementById("vertex-shader").firstChild.nodeValue;
+    fragmentShaderCode = document.getElementById("selection-shader").firstChild.nodeValue;
+    renderer.newShaderProgram(vertexShaderCode, fragmentShaderCode, 'SELECT');
     
-    // create scene and render
+    // activate DISPLAY program
+    renderer.setActiveProgram('DISPLAY');
+    
+    // create scene and bind render
     scene = new Scene(canvas, renderer);
+    // create scene event handler
     eventHandler = new EventHandler(scene);
 
     scene.draw();

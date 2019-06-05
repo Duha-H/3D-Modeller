@@ -4,7 +4,7 @@ import { degToRad } from '../utils/utils.js';
 
 const {mat4} = glMatrix; // object destructuring to get mat4
 // default camera position and reference attributes
-const CAM_DISTANCE = 40;
+const CAM_DISTANCE = 30;
 const CAM_X = 4, CAM_Y = 5, CAM_Z = 7;
 const REF_X = 0, REF_Y = 0, REF_Z = 0;
 const UP_X = 0, UP_Y = 1, UP_Z = 0;
@@ -68,24 +68,21 @@ export class Camera {
 
     /**
      * Pan/move camera around a given scene (update position and reference)
-     * @param {String} direction Direction of camera panning
-     * @param {Number} mag Magnitude of movement
+     * @param {Number} x Pan magnitude in x axis
+     * @param {Number} z Pan magnitude in z axis
      */
-    panCamera(direction, mag) {
+    panCamera(x, z) {
         var newPosition = this.position;
         var newReference = this.reference;
-        if (direction === 'x') { // pan in x direction
-            newPosition[0] += mag;  // update x position
-            newReference[0] += mag; // update x reference
-            this.updatePosition(newPosition);
-            this.updateReference(newReference);
-        }
-        if (direction === 'z') { // pan in x direction
-            newPosition[2] += mag;  // update z position
-            newReference[2] += mag; // update z reference
-            this.updatePosition(newPosition);
-            this.updateReference(newReference);
-        }
+
+        newPosition[0] -= Math.sin(degToRad(this.hAngle)) * x;
+        newPosition[2] -= Math.cos(degToRad(this.hAngle)) * z;
+        
+        newReference[0] -= Math.sin(degToRad(this.hAngle)) * x;
+        newReference[2] -= Math.cos(degToRad(this.hAngle)) * z;
+
+        this.updatePosition(newPosition);
+        this.updateReference(newReference);
     }
 
     /**
@@ -131,8 +128,8 @@ export class Camera {
      */
     setView() {
 
-        const cameraY = CAM_DISTANCE * Math.sin(degToRad(V_ANGLE));
         const cameraX = CAM_DISTANCE * Math.cos(degToRad(V_ANGLE)) * Math.cos(degToRad(H_ANGLE));
+        const cameraY = CAM_DISTANCE * Math.sin(degToRad(V_ANGLE));
         const cameraZ = CAM_DISTANCE * Math.cos(degToRad(V_ANGLE)) * Math.sin(degToRad(H_ANGLE));
 
         this.updatePosition([cameraX, cameraY, cameraZ]);
@@ -149,9 +146,10 @@ export class Camera {
         this.distance = camDistance;
         this.hAngle = hAngle;
         this.vAngle = vAngle;
-        var cameraY = camDistance * Math.sin(degToRad(vAngle));
-        var cameraX = camDistance * Math.cos(degToRad(vAngle)) * Math.cos(degToRad(hAngle));
-        var cameraZ = camDistance * Math.cos(degToRad(vAngle)) * Math.sin(degToRad(hAngle));
+        var ref = this.reference;
+        var cameraX = ref[0] + camDistance * Math.cos(degToRad(vAngle)) * Math.cos(degToRad(hAngle));
+        var cameraY = ref[1] + camDistance * Math.sin(degToRad(vAngle));
+        var cameraZ = ref[2] + camDistance * Math.cos(degToRad(vAngle)) * Math.sin(degToRad(hAngle));
 
         this.updatePosition([cameraX, cameraY, cameraZ]);
     }

@@ -1,3 +1,7 @@
+import '../gl-setup/gl-matrix.js';
+
+const {vec4} = glMatrix;
+
 // Utility/Helper functions
 
 /**

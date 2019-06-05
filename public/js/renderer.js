@@ -19,43 +19,59 @@ export function Renderer(canvas) {
         throw new Error('You do not have support for WebGL');
     }
     this.gl = gl;
-    this.programs = []; // maintain a list of shader programs to use
 
-    // set up default shader program
-    this.program = ShaderProgram(gl);
-    this.programs.push(this.program);
+    this.program = null;
+    this.programTypes = {};
+    this.currProgramType = '';
 
-    gl.linkProgram(this.program); // tie everything together
-    gl.useProgram(this.program);  // create executable program on graphics card and use it to draw
+    this.attribLocs = {};
+    this.uniformLocs = {};
 
-    gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.SCISSOR_TEST);
+    /**
+     * Creates and stores a new shader program
+     */
+    this.newShaderProgram = (vertexShaderCode, fragmentShaderCode, type) => {
+        
+        let shaderProgram = ShaderProgram(this.gl, vertexShaderCode, fragmentShaderCode);
+        this.program = shaderProgram;
+        this.programTypes[type] = shaderProgram;
+    }
 
-    // define shader program attribute/uniform locations
-    this.attribLocs = {
-        position:   gl.getAttribLocation(this.program, "position"),
-        color:      gl.getAttribLocation(this.program, "color"),
-        normal:     gl.getAttribLocation(this.program, "normal")
-    };
+    /**
+     * Activates shader program of specified type (link, use, and set uniform locations)
+     */
+    this.setActiveProgram = (type) => {
+        // check if program type is available
+        if (!this.programTypes.hasOwnProperty(type)) {
+            console.log('Error: Renderer does not contain a shader program of type: ', type);
+            return;
+        }
 
-    this.uniformLocs = {
-        model:      gl.getUniformLocation(this.program, "modelMtx"),
-        view:       gl.getUniformLocation(this.program, "viewMtx"),
-        projection: gl.getUniformLocation(this.program, "projectionMtx"),
-        normal:     gl.getUniformLocation(this.program, "normalMtx")
-    };
+        this.program = this.programTypes[type];
+        this.currProgramType = type;
 
+        //this.gl.linkProgram(this.program); // tie everything together
+        this.gl.useProgram(this.program);  // create executable program on graphics card and use it to draw
+
+        this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.enable(this.gl.SCISSOR_TEST);
+
+        // set uniform and attrib locations
+        this.attribLocs = {
+            position:   this.gl.getAttribLocation(this.program, "position"),
+            color:      this.gl.getAttribLocation(this.program, "color"),
+            normal:     this.gl.getAttribLocation(this.program, "normal")
+        };
+    
+        this.uniformLocs = {
+            model:      this.gl.getUniformLocation(this.program, "modelMtx"),
+            view:       this.gl.getUniformLocation(this.program, "viewMtx"),
+            projection: this.gl.getUniformLocation(this.program, "projectionMtx"),
+            normal:     this.gl.getUniformLocation(this.program, "normalMtx")
+        };
+        // since the same vertex shader code is being used, attribute and uniform location definitions (names) are fixed
+
+    }
 
 }
 
-/**
- * Creates and links a new shader program
- */
-Renderer.prototype.newShaderProgram = (vertexShaderCode, fragmentShaderCode) => {
-    console.log("TESTING RENDERER");
-    // TODO: implement
-}
-
-Renderer.prototype.soup = () => {
-    return 42;
-}

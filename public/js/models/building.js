@@ -22,6 +22,7 @@ export class Building {
         this.posX = 0;
         this.posZ = 0;
         this.color = [0.5, 0.8, 0.5];
+        this.id = [0, 0, 0];
 
         // building cross section type
         this.types = {

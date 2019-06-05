@@ -11,21 +11,19 @@ var gl;
  * Creates and returns a shader program
  * @param {WebGLRenderingContext} renderingContext 
  */
-export function ShaderProgram(renderingContext) {
+export function ShaderProgram(renderingContext, vertexShaderCode, fragmentShaderCode) {
 
     gl = renderingContext;
     
     // create shaders
-    let vertexShaderCode = document.getElementById("vertex-shader").firstChild.nodeValue;
     vertexShader = createShader(gl.VERTEX_SHADER, vertexShaderCode);
-    
-    let fragmentShaderCode = document.getElementById("fragment-shader").firstChild.nodeValue;
     fragmentShader = createShader(gl.FRAGMENT_SHADER, fragmentShaderCode);
     
     // create program
     program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
 
     return program;
 }

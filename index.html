@@ -54,6 +54,19 @@
             gl_FragColor = vec4(vColor * vLighting, 1);
         }
     </script>
+
+    <script id="selection-shader" type="x-shader/x-fragment">
+        precision highp float;
+
+        varying vec3 vColor;
+        varying vec3 vNormal;
+        varying mat4 vNormalMtx;
+
+        void main() {
+            gl_FragColor = vec4(vColor, 1.0);
+        }
+    </script>
+
 </head>
 
 <body class="container dark">
@@ -73,10 +86,10 @@
                 <button class="ctrl-key" id="ctrl-69" title="Extrude (e)"><img id="ctrl-icon" src="./public/assets/icon_d_extrude.png"/></button>
                 <button class="ctrl-key" id="ctrl-90" title="Zoom (z)"><img id="ctrl-icon" src="./public/assets/icon_d_zoom.png"/></button>
                 <button class="ctrl-key" id="ctrl-80" title="Pan (p)"><img id="ctrl-icon" src="./public/assets/icon_d_scale.png"/></button>
-                <button class="ctrl-key active" id="ctrl-79" title="Orbit (o)"><img id="ctrl-icon" src="./public/assets/icon_d_orbit.png"/></button>
+                <button class="ctrl-key" id="ctrl-79" title="Orbit (o)"><img id="ctrl-icon" src="./public/assets/icon_d_orbit.png"/></button>
                 <button class="ctrl-key" id="ctrl-78" title="New (n)"><img id="ctrl-icon" src="./public/assets/icon_d_new.png"/></button>
                 <button class="ctrl-key" id="ctrl-70" title="Change Style (f)"><img id="ctrl-icon" src="./public/assets/icon_d_change.png"/></button>
-                <button class="ctrl-key active" id="ctrl-71" title="Grid (g)"><img id="ctrl-icon" src="./public/assets/icon_d_grid.png"/></button>
+                <button class="ctrl-key" id="ctrl-71" title="Grid (g)"><img id="ctrl-icon" src="./public/assets/icon_d_grid.png"/></button>
             </div>
             
         </div>

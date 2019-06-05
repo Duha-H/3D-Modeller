@@ -4,6 +4,7 @@ import { degToRad } from './utils/utils.js';
 import { Grid } from './geometry/grid.js';
 import { Building } from './models/building.js';
 import { RoundedBlock } from './models/roundedBlock.js';
+import { Square } from './geometry/square.js';
 
 
 /**
@@ -27,16 +28,22 @@ export class Scene {
 
     constructor(canvas, renderer) {
 
-        this.gl = canvas.getContext('webgl');
+        this.gl = canvas.getContext('webgl', {preserveDrawingBuffer:true});
         this.canvas = canvas;
         this.renderer = renderer;
         this.mode = MODES.DARK;
+
+        this.sqX = 0;
+        this.sqY = 0;
+        this.sqZ = 0;
 
         // set up camera
         this.vWidth = canvas.clientWidth;   // viewport width
         this.vHeight = canvas.clientHeight; // viewport height
         this.aspectRatio = this.vWidth/this.vHeight;
         this.camera = this.setupCamera();
+
+        this.mv = modelViewMatrix;
 
         // create scene objects
         this.grid = new Grid(this.gl, 100, 100, 2);
@@ -140,12 +147,29 @@ export class Scene {
         mat4.multiply(modelViewMatrix, this.camera.viewMatrix, modelMatrix);
         mat4.invert(normalMatrix, modelViewMatrix);
         mat4.transpose(normalMatrix, normalMatrix);
+        this.mv = modelViewMatrix;
 
         this.gl.uniformMatrix4fv(this.renderer.uniformLocs.model, false, modelMatrix);
         this.gl.uniformMatrix4fv(this.renderer.uniformLocs.normal, false, normalMatrix);
 
         this.base.setColor(this.mode);
         this.base.draw(this.renderer.attribLocs);
+
+        // draw test square
+        modelMatrix = mat4.create();
+        var square = new Square(this.gl);
+        square.translate([this.sqX, this.sqY, this.sqZ], modelMatrix);
+        //square.scale([15, 15, 5], modelMatrix);
+
+        mat4.multiply(modelViewMatrix, this.camera.viewMatrix, modelMatrix);
+        mat4.invert(normalMatrix, modelViewMatrix);
+        mat4.transpose(normalMatrix, normalMatrix);
+
+        this.gl.uniformMatrix4fv(this.renderer.uniformLocs.model, false, modelMatrix);
+        this.gl.uniformMatrix4fv(this.renderer.uniformLocs.normal, false, normalMatrix);
+
+        square.setColor([1, 0, 0]);
+        //square.draw(this.renderer.attribLocs.position, this.renderer.attribLocs.color, this.renderer.attribLocs.normal);
 
         
         // draw grid
@@ -155,8 +179,10 @@ export class Scene {
         // draw buildings
         for(var i = 0; i < this.buildings.length; i++) {
             // set color of active building
-            if (i == this.currBldg) this.buildings[i].setColor([0.5, 0.8, 0.7]);
+            if (i === this.currBldg) this.buildings[i].setColor([0.5, 0.8, 0.7]);
             else this.buildings[i].setColor([0.5, 0.8, 0.5]);
+
+
             // draw building
             this.buildings[i].draw(this.renderer.uniformLocs, this.renderer.attribLocs, this.camera.viewMatrix);
         }
