@@ -1,6 +1,7 @@
 import '../gl-setup/gl-matrix.js';
 import { Cube } from './cube.js';
 import { RoundedBlock } from './roundedBlock.js';
+import { Cylinder } from './cylinder.js';
 
 
 /**
@@ -27,7 +28,8 @@ export class Building {
         // building cross section type
         this.types = {
             0: new Cube(this.gl),
-            1: new RoundedBlock(this.gl)
+            1: new RoundedBlock(this.gl),
+            2: new Cylinder(this.gl, 24)
         };
         this.floorType = 0; // default floor type
 

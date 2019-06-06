@@ -3,7 +3,6 @@ import { Camera } from './scene-objects/camera.js';
 import { degToRad } from './utils/utils.js';
 import { Grid } from './geometry/grid.js';
 import { Building } from './models/building.js';
-import { RoundedBlock } from './models/roundedBlock.js';
 import { Square } from './geometry/square.js';
 
 
@@ -181,7 +180,6 @@ export class Scene {
             // set color of active building
             if (i === this.currBldg) this.buildings[i].setColor([0.5, 0.8, 0.7]);
             else this.buildings[i].setColor([0.5, 0.8, 0.5]);
-
 
             // draw building
             this.buildings[i].draw(this.renderer.uniformLocs, this.renderer.attribLocs, this.camera.viewMatrix);
