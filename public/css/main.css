@@ -92,16 +92,69 @@ p {
     font-family: 'IBM Plex Mono', monospace;
 }
 
-#controls {
+#content {
+    width: 100%;
+    height: 83%;
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    justify-content: center;
+    align-items: stretch;
+    margin-top: 30px;
+    margin-bottom: 28px;
+}
+
+.side-bar {
     min-width: 120px;
     width: 150px;
-    margin: 0 20px 0;
+    margin: 0 20px 0 0px;
     padding: 5px;
-    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     border: 2px solid var(--border-color);
+    border-top-left-radius: 0%;
+    border-bottom-left-radius: 0%;
+    border-left: none;
+}
+
+#content-tabs {
+    width: 30px;
+    margin-left: 20px;
+    padding-bottom: 0;
+    display: grid;
+    grid-template-rows: repeat(3, 2fr);
+    grid-column-gap: 0;
+    justify-items: stretch;
+}
+
+.tab-button {
+    cursor: pointer;
+    margin: 0;
+    width: 30px;
+    justify-self: stretch;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 2px solid var(--border-color);
+    background: none;
+    color: var(--color);
+    border-bottom-right-radius: 0%;
+    border-top-right-radius: 0%;
+    padding: 0;
+}
+
+.tab-button.active {
+    border-right: none;
+}
+
+.rotate {
+    transform: rotate(270deg);
+    align-self: center;
+    text-align: center;
+    place-self: center stretch;
+}
+
+div#controls {
+    display: flex;
 }
 
 #keys {
@@ -138,21 +191,12 @@ p {
     filter: var(--filter);
 }
 
-#content {
-    width: 100%;
-    /* 
-    height: 630px;
-    min-height: 630px;
-    max-height: 800px;
-    */
-    height: 83%;
-    display: flex;
-    flex-direction: row;
-    text-align: center;
-    justify-content: center;
-    align-items: stretch;
-    margin-top: 30px;
-    margin-bottom: 28px;
+div#file-form {
+    display: none;
+}
+
+div#customize {
+    display: none;
 }
 
 #canvas {

@@ -54,6 +54,16 @@ export class Building {
     }
 
     /**
+     * Set building position, x and z coordinates
+     * @param {Number} posX Position in x axis
+     * @param {Number} posZ Position in z axis
+     */
+    setPosition(posX, posZ) {
+        this.posX = posX;
+        this.posZ = posZ;
+    }
+
+    /**
      * Set building color
      * @param {array} color RGB color array
      */

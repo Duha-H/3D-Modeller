@@ -1,12 +1,14 @@
 import { Renderer } from './js/renderer.js';
 import { Scene } from './js/scene.js';
-import { EventHandler } from './js/eventHandler.js';
+import { EventHandler } from './js/event-listeners/sceneListeners.js';
+import { PageEventHandler } from './js/event-listeners/pageListeners.js';
 
 
 const canvas = document.querySelector('canvas');
 var renderer;
 var scene;
-var eventHandler;
+var sceneEventHandler;
+var docEventHandler;
 
 
 
@@ -27,10 +29,13 @@ function main() {
     
     // create scene and bind render
     scene = new Scene(canvas, renderer);
-    // create scene event handler
-    eventHandler = new EventHandler(scene);
+    // create event
+    sceneEventHandler = new EventHandler(scene);
+    docEventHandler = new PageEventHandler(scene);
 
     scene.draw();
+
+    //pageEventHandler(scene);
 
 }
 
