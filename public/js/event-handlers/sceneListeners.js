@@ -1,6 +1,5 @@
 import * as utils from '../utils/utils.js';
 import '../gl-setup/gl-matrix.js';
-import { readFile } from '../file-controllers/fileHandler.js';
 
 /**
  * Event handling module for scene-related events (limisted to canvas)
@@ -20,6 +19,7 @@ var camDistance;
 var hAngle; // horizontal angle
 var vAngle;   // vertical angle
 var diff;
+// scene control modes
 const modes = {
     scale: [83, false],
     translate: [86, false],
@@ -54,8 +54,6 @@ export function EventHandler(scene) {
     window.addEventListener("resize", resizeViewport, false);
     document.querySelector('input').addEventListener('change', toggleTheme, false);
     
-    document.getElementById('upload').addEventListener("click", readFile, false);
-
     handleControlButtons();
 }
 
@@ -174,6 +172,14 @@ function keyboardHandler(keyCode) {
                 linkedScene.draw();
             }
             break;
+
+        case 67:    // 'c'
+            if(confirm('Are you sure you would like to clear all buildings?')) {
+                linkedScene.buildings = []; // clear buildings
+                linkedScene.currBldg = -1;
+                linkedScene.draw();
+            }
+            break;
         
         case 69:    // 'e'
             modes.extrude[1] = true;
@@ -184,7 +190,7 @@ function keyboardHandler(keyCode) {
             break;
 
         case 70:    // 'f'
-            linkedScene.buildings[linkedScene.currBldg].changeType();
+            linkedScene.buildings[linkedScene.currBldg].setType();
             linkedScene.draw();
             break;
 

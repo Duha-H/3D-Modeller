@@ -75,8 +75,8 @@ export class Building {
      * Change building cross section shape
      * @param {Number} newType Index of new building type (optional)
      */
-    changeType(newType) {
-        if (newType)    // if a type is specified
+    setType(newType) {
+        if (newType !== undefined)    // if a type is specified
             this.floorType = newType;
         else {
             const type = this.floorType + 1;

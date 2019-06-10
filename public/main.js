@@ -1,7 +1,7 @@
 import { Renderer } from './js/renderer.js';
 import { Scene } from './js/scene.js';
-import { EventHandler } from './js/event-listeners/sceneListeners.js';
-import { PageEventHandler } from './js/event-listeners/pageListeners.js';
+import { EventHandler } from './js/event-handlers/sceneListeners.js';
+import { PageEventHandler } from './js/event-handlers/pageListeners.js';
 
 
 const canvas = document.querySelector('canvas');
@@ -15,10 +15,12 @@ var docEventHandler;
 function main() {
     // create renderer and shader programs
     renderer = new Renderer(canvas);
+
     // DISPLAY shader program code
     let vertexShaderCode = document.getElementById("vertex-shader").firstChild.nodeValue;
     let fragmentShaderCode = document.getElementById("fragment-shader").firstChild.nodeValue;
     renderer.newShaderProgram(vertexShaderCode, fragmentShaderCode, 'DISPLAY');
+    
     // SELECT shader program code
     vertexShaderCode = document.getElementById("vertex-shader").firstChild.nodeValue;
     fragmentShaderCode = document.getElementById("selection-shader").firstChild.nodeValue;
@@ -27,15 +29,14 @@ function main() {
     // activate DISPLAY program
     renderer.setActiveProgram('DISPLAY');
     
-    // create scene and bind render
+    // create scene and bind renderer
     scene = new Scene(canvas, renderer);
-    // create event
+    // set up event handlers
     sceneEventHandler = new EventHandler(scene);
     docEventHandler = new PageEventHandler(scene);
 
+    // draw scene
     scene.draw();
-
-    //pageEventHandler(scene);
 
 }
 

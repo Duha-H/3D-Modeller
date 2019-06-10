@@ -96,18 +96,27 @@
                 <button class="ctrl-key" id="ctrl-78" title="New (n)"><img id="ctrl-icon" src="./public/assets/icon_d_new.png"/></button>
                 <button class="ctrl-key" id="ctrl-70" title="Change Style (f)"><img id="ctrl-icon" src="./public/assets/icon_d_change.png"/></button>
                 <button class="ctrl-key" id="ctrl-71" title="Grid (g)"><img id="ctrl-icon" src="./public/assets/icon_d_grid.png"/></button>
+                <button class="ctrl-key" id="ctrl-67" title="Clear (c)"><img id="ctrl-icon" src="./public/assets/icon_d_clear.png"/></button>
             </div>            
         </div>
+
         <div class="side-bar" id="file-form">
             <h3>File</h3>
-            <label for="file-upload">Upload a Model File</label>
-            <input type="file" id="file-upload" accept=".txt">
-            <button id="upload">Submit</button>
-            <p id="output"></p>
-            <label for="download">Download Model File</label>
-            <a id="download" download="model.json" href="">Download</a>
-            <!--<button id="download" >Download</button>-->
+            <div id="file">
+                <!--UPLOAD-->
+                <label class="file" for="file-upload">Upload 3D Models</label>
+                <input class="file" type="file" id="file-upload" accept=".json, application/json">
+                <label id="upload-label">Browse...</label>
+                <button class="load-button" id="upload">Upload</button>
+                <button class="load-button" id="load-buildings" title="Load buildings into scene">Load Buildings</button>
+                <!--DOWNLOAD-->                
+                <label class="file" for="download">Download 3D Models</label>
+                <a id="download" download="model.json" href="">
+                    <button class="load-button">Download</button>
+                </a>
+            </div>
         </div>
+        
         <div class="side-bar" id="customize">
 
         </div>

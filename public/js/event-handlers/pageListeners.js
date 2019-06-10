@@ -1,4 +1,4 @@
-import { readFile } from '../file-controllers/fileHandler.js';
+import { fileReader, drawBuildings } from '../file-controllers/fileReader.js';
 import { fileGenerator } from '../file-controllers/fileGenerator.js';
 
 /**
@@ -7,18 +7,41 @@ import { fileGenerator } from '../file-controllers/fileGenerator.js';
 
 var tabButtons;
 
+
 /**
  * Assigns/binds all event listeners for general document elements
  */
 export function PageEventHandler(scene) {
+    // Bind side-bar tab button handlers
     tabButtons = document.querySelectorAll('.tab-button');
     if (tabButtons.length !== 0)
         handleTabButtons();
 
+    // Bind file upload button handler
+    var uploadButton = document.getElementById('upload');
+    uploadButton.addEventListener('click', () => { fileReader(scene.gl) }, false);
+
+    // Bind load buildings button handler
+    var uploadButton = document.getElementById('load-buildings');
+    uploadButton.addEventListener('click', () => { drawBuildings(scene) }, false);
+    
+    // Bind file download button handler
     var downloadButton = document.getElementById('download');
     downloadButton.addEventListener('click', () => { fileGenerator(scene) }, false);
-    //fileGenerator(scene);
+
+    // File upload trigger and label update
+    var inputForm = document.getElementById('file-upload');
+    var uploadLabel = document.getElementById('upload-label');
+
+    uploadLabel.addEventListener('click', () => { inputForm.click(); }, false);
+    inputForm.onchange = () => {
+        var file = inputForm.files[0];
+        uploadLabel.innerHTML = file.name;
+
+    };
+    
 }
+
 
 /**
  * Binds event listeners to side-bar tab buttons
@@ -29,16 +52,16 @@ function handleTabButtons() {
     });
 }
 
+
 /**
  * Handles click event for toggling between side-bar tabs
  * @param {Event} e Click event
  */
 function onTabButtonClick(e) {
     var button = e.target;
-    console.log('this: ', button);
     // deactivate active button
     tabButtons.forEach((element) => {
-        if(element.className.includes('active')) {
+        if(element.className.includes('active') && element !== button) {
             element.className = "tab-button";
             var activeId = element.id;
             var activeTab = document.querySelector(`div`+`#${activeId}`);
@@ -47,8 +70,7 @@ function onTabButtonClick(e) {
     });
     // activate target button
     button.className += " active";
-    var id_ = button.id;
-    var tab = document.querySelector(`div`+`#${id_}`);
+    var id = button.id;
+    var tab = document.querySelector(`div`+`#${id}`);
     tab.style.display = 'flex';
-    console.log("tab:",tab);
 }
