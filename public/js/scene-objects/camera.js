@@ -8,9 +8,9 @@ const CAM_DISTANCE = 30;
 const CAM_X = 4, CAM_Y = 5, CAM_Z = 7;
 const REF_X = 0, REF_Y = 0, REF_Z = 0;
 const UP_X = 0, UP_Y = 1, UP_Z = 0;
-const H_ANGLE = 45; // horizontal angle
+const H_ANGLE = 0; // horizontal angle
 const V_ANGLE = 45; // vertical angle
-const RATE = 1;     // camera orbitting rate
+const RATE = 1;     // camera orbiting rate
 
 /**
  * Creates Camera object
@@ -112,8 +112,8 @@ export class Camera {
      * @param {number} near near bound of orthographic projection
      * @param {number} far far bound of orthographic projection
      */
-    setOrthogonal(projectionMatrix, left, right, bottom, top, near, far) {
-        mat4.ortho(projectionMatrix,
+    setOrthogonal(left, right, bottom, top, near, far) {
+        mat4.ortho(this.projectionMatrix,
             left,
             right,
             bottom,

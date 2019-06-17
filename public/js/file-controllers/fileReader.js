@@ -1,4 +1,5 @@
 import { Building } from '../models/building.js';
+import * as feedback from '../utils/feedback.js';
 
 /**
  * File reader for uploaded scene models
@@ -40,10 +41,11 @@ function parseContents(content) {
         constructedBuildings.push(newBuilding);
     });
     console.log(`Loaded ${constructedBuildings.length} buildings.`);
+    feedback.showSnackbar(`Uploaded ${constructedBuildings.length} buildings`);
 }
 
 /**
- * Creates a building model with the specified attributes
+ * Returns a building model with the specified attributes
  * @param {Object} attributes Object containing building attributes
  */
 function createBuilding(attributes) {
