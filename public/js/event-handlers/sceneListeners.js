@@ -1,4 +1,5 @@
 import * as utils from '../utils/utils.js';
+import * as feedback from '../utils/feedback.js';
 import '../gl-setup/gl-matrix.js';
 
 /**
@@ -16,6 +17,7 @@ var oldX, oldY;
 var dx = 0, dy = 0;
 var linkedScene;
 var camDistance;
+var navigator;
 var hAngle; // horizontal angle
 var vAngle;   // vertical angle
 var diff;
@@ -34,9 +36,11 @@ const modes = {
  * Sets up window and canvas event listeners and applies events to target scene
  * @param {Scene} scene Target to which event handling is applied
  */
-export function EventHandler(scene) {
+export function EventHandler(scene, indicator) {
     canvas = scene.canvas;
     linkedScene = scene;
+    if(indicator)   // check that indicator isn't null
+        navigator = indicator;
 
     // set initial scene attributes
     camDistance = linkedScene.camera.distance;
@@ -93,6 +97,8 @@ function mouseMove(e) {
         oldY = e.pageY;
         // update scene
         linkedScene.updateCamera(vAngle, hAngle, camDistance);
+        if(navigator)   // update navigator view if not null
+            navigator.updateCamera(vAngle, hAngle, 30);
     }
     if (modes.pan[1]) {
         dx = (e.pageX - oldX);
@@ -184,7 +190,7 @@ function keyboardHandler(keyCode) {
         case 69:    // 'e'
             modes.extrude[1] = true;
             modes.zoom[1] = modes.translate[1] = modes.scale[1] = false;
-            showSnackbar("Extrude Mode");
+            feedback.showSnackbar("Extrude Mode");
             setInactive([modes.zoom[0], modes.translate[0], modes.scale[0]]);
             setActive(69);
             break;
@@ -207,19 +213,19 @@ function keyboardHandler(keyCode) {
         case 79:    // 'o'
             modes.orbit[1] = !modes.orbit[1]; // toggle camera orbitting on/off
             if (modes.orbit[1]) toggleOrbitPan('Orbit');
-            else showSnackbar('Orbit Mode off');
+            else feedback.showSnackbar('Orbit Mode off');
             break;
         
         case 80:    // 'p'
             modes.pan[1] = !modes.pan[1]; // toggle camera pan on/off
             if (modes.pan[1]) toggleOrbitPan('Pan');
-            else showSnackbar('Pan Mode off');
+            else feedback.showSnackbar('Pan Mode off');
             break;
 
         case 83:    // 's'
             modes.scale[1] = true;
             modes.zoom[1] = modes.extrude[1] = modes.translate[1] = false;
-            showSnackbar('Scale Mode');
+            feedback.showSnackbar('Scale Mode');
             setInactive([modes.zoom[0], modes.translate[0], modes.extrude[0]]);
             setActive(83);
             break;
@@ -227,7 +233,7 @@ function keyboardHandler(keyCode) {
         case 86:    // 'v'
             modes.translate[1] = true;
             modes.zoom[1] = modes.extrude[1] = modes.scale[1] = false;
-            showSnackbar('Translate Mode');
+            feedback.showSnackbar('Translate Mode');
             setInactive([modes.zoom[0], modes.extrude[0], modes.scale[0]]);
             setActive(86);
             break;
@@ -235,7 +241,7 @@ function keyboardHandler(keyCode) {
         case 90:    // 'z'
             modes.zoom[1] = true;
             modes.extrude[1] = modes.translate[1] = modes.scale[1] = false;
-            showSnackbar('Zoom Mode');
+            feedback.showSnackbar('Zoom Mode');
             setInactive([modes.extrude[0], modes.translate[0], modes.scale[0]]);
             setActive(90);
             break;
@@ -245,18 +251,6 @@ function keyboardHandler(keyCode) {
     }
 }
 
-/**
- * Displays a temporary snackbar message
- * @param {String} message snackbar message
- */
-function showSnackbar(message) {
-    snackbar = document.getElementById("snackbar");
-    snackbar.innerText = message;
-    snackbar.className = "show";
-
-    // remove snackbar after 3 seconds
-    setTimeout(() => { snackbar.className = "" }, 3000);
-}
 
 /**
  * Handles resizing canvas on window resize event
@@ -283,7 +277,7 @@ function toggleOrbitPan(activeMode) {
         setInactive([79]);
         modes.orbit[1] = false;
     }
-    showSnackbar(`${activeMode} Mode on`);
+    feedback.showSnackbar(`${activeMode} Mode on`);
 }
 
 /**

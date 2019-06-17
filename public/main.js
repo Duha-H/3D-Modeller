@@ -2,11 +2,15 @@ import { Renderer } from './js/renderer.js';
 import { Scene } from './js/scene.js';
 import { EventHandler } from './js/event-handlers/sceneListeners.js';
 import { PageEventHandler } from './js/event-handlers/pageListeners.js';
+import { Modeller } from './js/modeller.js';
+import { Indicator } from './js/coordinateIndicator.js';
 
 
-const canvas = document.querySelector('canvas');
+const canvas = document.getElementById('main-canvas');
+//const navigatorCanvas = document.getElementById('navigator-canvas');
 var renderer;
 var scene;
+var navigator;
 var sceneEventHandler;
 var docEventHandler;
 
@@ -30,7 +34,7 @@ function main() {
     renderer.setActiveProgram('DISPLAY');
     
     // create scene and bind renderer
-    scene = new Scene(canvas, renderer);
+    scene = new Modeller(canvas, renderer);
     // set up event handlers
     sceneEventHandler = new EventHandler(scene);
     docEventHandler = new PageEventHandler(scene);
