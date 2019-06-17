@@ -61,6 +61,7 @@ export class Model {
         gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, 0, 0);
 
         gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length / 3);
+        //gl.drawArrays(gl.LINES, 0, this.vertices.length / 3);
     }
 
     /**
