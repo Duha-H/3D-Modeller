@@ -59,7 +59,6 @@ function handleTabButtons() {
  */
 function onTabButtonClick(e) {
     var button = e.target;
-    console.log(button.tagName);
     if(button.tagName !== 'INPUT') // check that a tab 'button' was actually clicked
         return;
     // deactivate active button
