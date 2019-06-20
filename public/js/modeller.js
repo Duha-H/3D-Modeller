@@ -19,8 +19,8 @@ var modelMatrix = mat4.create();
 
 export class Modeller extends Scene {
 
-    constructor(canvas, renderer) {
-        super(canvas, renderer);
+    constructor(renderer) {
+        super(renderer);
 
         // create scene objects
         this.grid = new Grid(this.gl, 100, 100, 2);

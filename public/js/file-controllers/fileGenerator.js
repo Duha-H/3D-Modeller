@@ -19,8 +19,8 @@ export function fileGenerator(scene) {
         // store building attributes
         currBuilding.id = id;
         currBuilding.floorType = building.floorType;
-        currBuilding.height = building.height;
-        currBuilding.scale = [building.scaleX, building.scaleZ];
+        //currBuilding.height = building.height;
+        currBuilding.scale = [building.scaleX, building.scaleY, building.scaleZ];
         currBuilding.position = [building.posX, building.posZ];
         currBuilding.color = building.color;
 

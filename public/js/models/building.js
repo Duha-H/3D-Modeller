@@ -17,8 +17,9 @@ export class Building {
 
         this.gl = gl;
         // building dimensions and attributes
-        this.height = 1; // number of floors
+        this.height = 1; // number of floors (TODO: probably remove)
         this.scaleX = 1;
+        this.scaleY = 1;
         this.scaleZ = 1;
         this.posX = 0;
         this.posZ = 0;
@@ -36,20 +37,13 @@ export class Building {
     }
 
     /**
-     * Set number of building floors
-     * @param {Number} height Number of floors
-     */
-    setHeight(height) {
-        this.height = height <= 0 ? 1 : height;
-    }
-
-    /**
      * Set horizontal scale of building (base)
      * @param {Number} scaleX Scale in x direction
      * @param {Number} scaleZ Scale in z direction
      */
-    setScale(scaleX, scaleZ) {
+    setScale(scaleX, scaleY, scaleZ) {
         this.scaleX = scaleX;
+        this.scaleY = scaleY;
         this.scaleZ = scaleZ;
     }
 
@@ -97,29 +91,23 @@ export class Building {
         let modelMatrix = mat4.create();
 
         // apply building scale and color (common attributes)
-        floor.setHeight(0.5); // reduce default floor height
+        floor.setHeight(0.5); // reduce default floor height (uses fixed floor height for all 3d model types)
         floor.setColor(this.color);
         mat4.translate(modelMatrix, modelMatrix, [this.posX, -1, this.posZ]);
-        mat4.scale(modelMatrix, modelMatrix, [this.scaleX, 1, this.scaleZ]);
+        mat4.scale(modelMatrix, modelMatrix, [this.scaleX, this.scaleY, this.scaleZ]);
         
-        
-        for(let i = 0; i < this.height; i++) {
-            
-            x = i == 0 ? 0 : 1;
-            floor.translate([0, floor.height*x, 0], modelMatrix);
+        // create modelview matrix
+        let normalMatrix = mat4.create();
+        let modelViewMatrix = mat4.create();
+        mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
+        mat4.invert(normalMatrix, modelViewMatrix);
+        mat4.transpose(normalMatrix, normalMatrix);
 
-            let normalMatrix = mat4.create();
-            let modelViewMatrix = mat4.create();
-            mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
-            mat4.invert(normalMatrix, modelViewMatrix);
-            mat4.transpose(normalMatrix, normalMatrix);
+        // specify matrix values for shader program uniforms
+        this.gl.uniformMatrix4fv(uniformLocations.model, false, modelMatrix);
+        this.gl.uniformMatrix4fv(uniformLocations.normal, false, normalMatrix);
 
-            // specify matrix values for shader program uniforms
-            this.gl.uniformMatrix4fv(uniformLocations.model, false, modelMatrix);
-            this.gl.uniformMatrix4fv(uniformLocations.normal, false, normalMatrix);
+        floor.draw(attribLocations);
 
-            floor.draw(attribLocations);
-
-        }
     }
 }

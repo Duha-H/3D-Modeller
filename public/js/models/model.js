@@ -122,4 +122,12 @@ export class Model {
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
     }
 
+    /**
+     * Adds intermediate base polygons to model vertices
+     * @param {Number} subPolygons Number of sub-polygons/sections in mesh redefinition
+     */
+    convertToMesh(subPolygons) {
+        var subPlgns = subPolygons === undefined ? 4 : subPolygons;
+    }
+
 }

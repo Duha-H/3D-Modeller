@@ -5,7 +5,7 @@ import { Model } from './model.js';
 // Cube object definition and functions
 
 const {mat4} = glMatrix; // object destructuring to get mat4
-const vertices = [  // cube transformation origin (0,0,0) is on the bottom face
+const vertices1 = [  // cube transformation origin (0,0,0) is on the bottom face
     // Front
      1,  2,  1,
      1,  0,  1,
@@ -55,6 +55,66 @@ const vertices = [  // cube transformation origin (0,0,0) is on the bottom face
     -1,  0, -1
 
 ];
+
+const vertexPos = [
+    // bottom polygon
+    [  1, 0,  1],   // 0
+    [  1, 0, -1],   // 1
+    [ -1, 0, -1],   // 2
+    [ -1, 0,  1],   // 3
+
+    // top polygon
+    [  1, 2,  1],   // 4
+    [  1, 2, -1],   // 5
+    [ -1, 2, -1],   // 6
+    [ -1, 2,  1],   // 7
+]
+
+const vertices = [
+    // FRONT
+    ...vertexPos[4],
+    ...vertexPos[0],
+    ...vertexPos[7],
+    ...vertexPos[7],
+    ...vertexPos[0],
+    ...vertexPos[3],
+    // LEFT
+    ...vertexPos[7],
+    ...vertexPos[3],
+    ...vertexPos[6],
+    ...vertexPos[6],
+    ...vertexPos[3],
+    ...vertexPos[2],
+    // BACK
+    ...vertexPos[6],
+    ...vertexPos[2],
+    ...vertexPos[5],
+    ...vertexPos[5],
+    ...vertexPos[2],
+    ...vertexPos[1],
+    // RIGHT
+    ...vertexPos[5],
+    ...vertexPos[1],
+    ...vertexPos[4],
+    ...vertexPos[4],
+    ...vertexPos[1],
+    ...vertexPos[0],
+    // TOP
+    ...vertexPos[4],
+    ...vertexPos[5],
+    ...vertexPos[7],
+    ...vertexPos[7],
+    ...vertexPos[5],
+    ...vertexPos[6],
+    // BOTTOM
+    ...vertexPos[0],
+    ...vertexPos[1],
+    ...vertexPos[3],
+    ...vertexPos[3],
+    ...vertexPos[1],
+    ...vertexPos[2]
+
+]
 
 const normals = [
     ...utils.copyArray([ 0,  0,  1], 6),  // FRONT

@@ -1,18 +1,23 @@
 import { Renderer } from './js/renderer.js';
-import { Scene } from './js/scene.js';
 import { EventHandler } from './js/event-handlers/sceneListeners.js';
 import { PageEventHandler } from './js/event-handlers/pageListeners.js';
 import { Modeller } from './js/modeller.js';
 import { Indicator } from './js/coordinateIndicator.js';
+import { ProfileCustomizer } from './js/model-customization/profileCustomizer.js';
+import { CustomizationHandler } from './js/event-handlers/customizationListeners.js';
 
 
 const canvas = document.getElementById('main-canvas');
 //const navigatorCanvas = document.getElementById('navigator-canvas');
+const profileCanvas = document.getElementById('profile-canvas');
 var renderer;
+var otherRenderer;
 var scene;
 var navigator;
+var profileCustomizer;
 var sceneEventHandler;
 var docEventHandler;
+var customizationHandler;
 
 
 
@@ -34,10 +39,13 @@ function main() {
     renderer.setActiveProgram('DISPLAY');
     
     // create scene and bind renderer
-    scene = new Modeller(canvas, renderer);
+    scene = new Modeller(renderer);
+    profileCustomizer = new ProfileCustomizer(profileCanvas);
+    
     // set up event handlers
     sceneEventHandler = new EventHandler(scene);
-    docEventHandler = new PageEventHandler(scene);
+    customizationHandler = new CustomizationHandler(profileCustomizer);
+    docEventHandler = new PageEventHandler(scene, profileCustomizer);
 
     // draw scene
     scene.draw();

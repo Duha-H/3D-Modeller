@@ -19,6 +19,7 @@ export function Renderer(canvas) {
         throw new Error('You do not have support for WebGL');
     }
     this.gl = gl;
+    this.canvas = canvas;
 
     this.program = null;
     this.programTypes = {};

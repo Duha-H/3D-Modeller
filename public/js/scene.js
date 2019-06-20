@@ -1,9 +1,5 @@
-import { Cube } from './models/cube.js';
 import { Camera } from './scene-objects/camera.js';
 import { degToRad } from './utils/utils.js';
-import { Grid } from './geometry/grid.js';
-import { Building } from './models/building.js';
-import { Square } from './geometry/square.js';
 
 
 /**
@@ -25,20 +21,16 @@ var modelMatrix = mat4.create();
 
 export class Scene {
 
-    constructor(canvas, renderer) {
+    constructor(renderer) {
 
-        this.gl = canvas.getContext('webgl');
-        this.canvas = canvas;
+        this.gl = renderer.canvas.getContext('webgl');
+        this.canvas = renderer.canvas;
         this.renderer = renderer;
         this.mode = MODES.DARK;
 
-        this.sqX = 0;
-        this.sqY = 0;
-        this.sqZ = 0;
-
         // set up camera
-        this.vWidth = canvas.clientWidth;   // viewport width
-        this.vHeight = canvas.clientHeight; // viewport height
+        this.vWidth = this.canvas.clientWidth;   // viewport width
+        this.vHeight = this.canvas.clientHeight; // viewport height
         this.aspectRatio = this.vWidth/this.vHeight;
         this.camera = this.setupCamera();
 

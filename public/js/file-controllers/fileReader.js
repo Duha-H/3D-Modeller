@@ -63,28 +63,33 @@ function createBuilding(attributes) {
     building.setType(floorType);
 
     // check height validity
-    const height = attributes.height;
-    if(height === undefined || typeof(height) !== 'number') {
-        console.log(`Error reading height of building #${id}, value invalid or undefined: ${height}`);
-        return;
-    }
-    building.setHeight(height);
+    //const height = attributes.height;
+    //if(height === undefined || typeof(height) !== 'number') {
+    //    console.log(`Error reading height of building #${id}, value invalid or undefined: ${height}`);
+    //    return;
+    //}
+    //building.setHeight(height);
 
     // check scale validity
     const scale = attributes.scale;
-    if(scale === undefined || scale.length !== 2 || typeof(scale[0]) !== 'number' || typeof(scale[1]) !== 'number') {
+    const sx = scale[0];
+    const sy = scale[1];
+    const sz = scale[2];
+    if(scale === undefined || scale.length !== 3 || typeof(sx) !== 'number' || typeof(sy) !== 'number' || typeof(sz) !== 'number') {
         console.log(`Error reading scale of building #${id}, value invalid or undefined: ${scale}`);
         return;
     }
-    building.setScale(scale[0], scale[1]);
+    building.setScale(sx, sy, sz);
 
     // check position validity
     const position = attributes.position;
-    if(position === undefined || position.length !== 2 || typeof(position[0]) !== 'number' || typeof(position[1]) !== 'number') {
+    const px = position[0];
+    const pz = position[1];
+    if(position === undefined || position.length !== 2 || typeof(px) !== 'number' || typeof(pz) !== 'number') {
         console.log(`Error reading position of building #${id}, value invalid or undefined: ${position}`);
         return;
     }
-    building.setPosition(...position);
+    building.setPosition(px, pz);
 
     // check color validity
     const color = attributes.color;
