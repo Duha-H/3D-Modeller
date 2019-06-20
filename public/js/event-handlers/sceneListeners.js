@@ -56,7 +56,6 @@ export function EventHandler(scene, indicator) {
     //canvas.addEventListener("click", onClick2, false);
     window.addEventListener("keydown", (e) => {keyboardHandler(e.keyCode)}, false);
     window.addEventListener("resize", resizeViewport, false);
-    document.querySelector('input').addEventListener('change', toggleTheme, false);
     
     handleControlButtons();
 }
@@ -125,7 +124,7 @@ function keyboardHandler(keyCode) {
                 linkedScene.draw();
             }
             if (modes.scale[1] && linkedScene.buildings[linkedScene.currBldg].scaleX > 0.5) {    // scale mode
-                linkedScene.buildings[linkedScene.currBldg].scaleX-=0.5;
+                linkedScene.buildings[linkedScene.currBldg].scaleX -= 0.5;
                 linkedScene.draw();
             }
             break;
@@ -136,7 +135,7 @@ function keyboardHandler(keyCode) {
                 linkedScene.updateCamera(vAngle, hAngle, camDistance);
             }
             if (modes.extrude[1]) {  // extrude mode
-                linkedScene.buildings[linkedScene.currBldg].height++;
+                linkedScene.buildings[linkedScene.currBldg].scaleY++;
                 linkedScene.draw();
             }
             if (modes.translate[1]) { // translate mode
@@ -165,8 +164,8 @@ function keyboardHandler(keyCode) {
                 camDistance += 0.5; // zoom out
                 linkedScene.updateCamera(vAngle, hAngle, camDistance);
             }
-            if (modes.extrude[1] && linkedScene.buildings[linkedScene.currBldg].height > 1) {  // extrude mode
-                linkedScene.buildings[linkedScene.currBldg].height--;
+            if (modes.extrude[1] && linkedScene.buildings[linkedScene.currBldg].scaleY > 1) {  // extrude mode
+                linkedScene.buildings[linkedScene.currBldg].scaleY--;
                 linkedScene.draw();
             }
             if (modes.translate[1]) { // translate mode
@@ -280,17 +279,6 @@ function toggleOrbitPan(activeMode) {
     feedback.showSnackbar(`${activeMode} Mode on`);
 }
 
-/**
- * Toggle color theme of the page
- */
-function toggleTheme() {
-    // adjust styling theme
-    var container = document.querySelector('body');
-    var newTheme = container.className.includes('dark') ? 'light' : 'dark';
-    container.className = `container ${newTheme}`;
-    //adjust canvas theme
-    linkedScene.toggleTheme();
-}
 
 /**
  * Adds event listeners to all control panel buttons

@@ -83,9 +83,9 @@
     <div id="content">
         <div id="sidebar">
             <div id="content-tabs">
-                <input id="controls" name="submit" type="image" src="./public/assets/icon_controls.png" alt="Submit" id="controls" class="tab-button active" title="Controls"/>
+                <input id="controls" name="submit" type="image" src="./public/assets/icon_controls.png" alt="Submit" id="controls" class="tab-button" title="Controls"/>
                 <input id="file-form" name="submit" type="image" src="./public/assets/icon_file.png" alt="Submit" id="controls" class="tab-button" title="File"/>
-                <input id="customize" name="submit" type="image" src="./public/assets/icon_customize.png" alt="Submit" id="controls" class="tab-button" title="Customize"/>
+                <input id="customize" name="submit" type="image" src="./public/assets/icon_customize.png" alt="Submit" id="controls" class="tab-button active" title="Customize"/>
                 
             </div>
             
@@ -124,14 +124,20 @@
             
             <div class="side-bar" id="customize">
                 <h3>Customize</h3>
+                <div id="profile-customizer">
+                    <input id="cp2-lock" type="checkbox"></input>
+                    <input id="cp3-lock" type="checkbox"></input>
+                    <input id="reset-cps" type="button">Reset</input>
+                    <canvas id="profile-canvas" width="120" height="300"></canvas>
+                </div>
     
             </div>
         </div>
         
         <canvas id="main-canvas" width="1700" height="630">This browser does not seem to support WebGL</canvas>
         <!--
-        <canvas id="navigator-canvas" width="150" height="63"></canvas>
         -->
+        <canvas id="navigator-canvas" width="150" height="63"></canvas>
     </div>
     <div id="snackbar"></div>
 </body>

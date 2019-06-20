@@ -6,12 +6,20 @@ import { fileGenerator } from '../file-controllers/fileGenerator.js';
  */
 
 var tabButtons;
+var linkedScene;
+var linkedCustomizer;
 
 
 /**
  * Assigns/binds all event listeners for general document elements
  */
-export function PageEventHandler(scene) {
+export function PageEventHandler(scene, profileCustomizer) {
+
+    linkedScene = scene;
+    linkedCustomizer = profileCustomizer;
+    // Bind theme toggle handler
+    document.querySelector('input').addEventListener('change', toggleTheme, false);
+
     // Bind side-bar tab button handlers
     tabButtons = document.querySelectorAll('.tab-button');
     if (tabButtons.length !== 0)
@@ -75,4 +83,17 @@ function onTabButtonClick(e) {
     var id = button.id;
     var tab = document.querySelector(`div`+`#${id}`);
     tab.style.display = 'flex';
+}
+
+/**
+ * Toggle color theme of the page
+ */
+function toggleTheme() {
+    // adjust styling theme
+    var container = document.querySelector('body');
+    var newTheme = container.className.includes('dark') ? 'light' : 'dark';
+    container.className = `container ${newTheme}`;
+    //adjust canvas theme
+    linkedScene.toggleTheme();
+    linkedCustomizer.toggleTheme();
 }

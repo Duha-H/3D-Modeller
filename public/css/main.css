@@ -146,6 +146,7 @@ p {
     border-bottom-left-radius: 0px;
     opacity: 0.4;
     filter: var(--filter);
+    max-width: 23.6px;
 }
 
 .tab-button.active {
@@ -153,7 +154,7 @@ p {
 }
 
 div#controls {
-    display: flex;
+    display: none;
 }
 
 #keys {
@@ -195,7 +196,7 @@ div#file-form {
 }
 
 div#customize {
-    display: none;
+    display: flex;
 }
 
 .file {
@@ -248,6 +249,15 @@ input#file-upload {
     border-radius: 20px;
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+#profile-customizer {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#profile-canvas {
+    border: 1px solid var(--border-color);
 }
 
 #main-canvas {
