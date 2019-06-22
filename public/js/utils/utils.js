@@ -75,6 +75,35 @@ export function multMatVec4(mat, vec) {
 
 }
 
+/**
+ * Returns the value bound between minimum and maximum bounds
+ * @param {Number} value Value to apply clamping to
+ * @param {Number} min Minimum value
+ * @param {Number} max Maximum
+ */
 export function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
+}
+
+/**
+ * Returns an array representing the cross product of vec1 x vec2
+ * @param {Array} vec1 First vector
+ * @param {Array} vec2 Second vector
+ */
+export function crossProduct(vec1, vec2) {
+    const x = (vec1[1] * vec2[2]) - (vec1[0] * vec2[1]);
+    const y = (vec1[2] * vec2[0]) - (vec1[0] * vec2[2]);
+    const z = (vec1[0] * vec2[1]) - (vec1[1] * vec2[0]);
+    return [x, y, z];
+}
+
+/**
+ * Returns the resulting array of subtracting vec2 from vec1
+ * @param {Array} vec1 First vector
+ * @param {Array} vec2 Second vector
+ */
+export function subtractVec3(vec1, vec2) {
+    return [vec1[0] - vec2[0],
+            vec1[1] - vec2[1],
+            vec1[2] - vec2[2]];
 }

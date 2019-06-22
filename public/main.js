@@ -3,7 +3,7 @@ import { EventHandler } from './js/event-handlers/sceneListeners.js';
 import { PageEventHandler } from './js/event-handlers/pageListeners.js';
 import { Modeller } from './js/modeller.js';
 import { Indicator } from './js/coordinateIndicator.js';
-import { ProfileCustomizer } from './js/model-customization/profileCustomizer.js';
+import { ProfileCustomizer } from './js/model-management/profileCustomizer.js';
 import { CustomizationHandler } from './js/event-handlers/customizationListeners.js';
 
 

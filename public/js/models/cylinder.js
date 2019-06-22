@@ -5,19 +5,15 @@ import { Model } from './model.js';
 // Cylinder object definition and functions
 
 const {mat4} = glMatrix; // object destructuring to get mat4
-var vertices = [];
-var normals = [];
+var vertexPositions = [];
 
 export class Cylinder extends Model {
 
     constructor(gl, slices) {
 
-        vertices = generateVertices(slices);
-        normals = generateNormals(slices);
-        super(gl, vertices, normals);
+        vertexPositions = generateVertexPositions(slices);
+        super(gl, vertexPositions);
         this.gl = gl;
-        this.vertices = vertices;
-        this.normals = normals;
     }
 
     /**
@@ -28,69 +24,19 @@ export class Cylinder extends Model {
     }
 }
 
-function generateVertices(slices) {
-    vertices = [];
-    var diff = utils.degToRad(360/slices);
-    var angle = 0;
+
+/**
+ * Returns vertex positions of a cylinder's base (circle) with the specified number of slices
+ * @param {Number} slices Number of model slices
+ */
+function generateVertexPositions(slices) {
+    let vertexPositions = [];
+    let diff = utils.degToRad(360/slices);
+    let angle = 0;
+    vertexPositions.push([0, 0, 0]);    // center
     for(let i = 0; i < slices; i++) {
-        // BOTTOM TRIANGLE
-        vertices.push(...[0, 0, 0]); // center
-        vertices.push(...[
-            Math.cos(angle), 0, Math.sin(angle)
-        ]);
-        vertices.push(...[
-            Math.cos(angle + diff), 0, Math.sin(angle + diff)
-        ]);
-
-        // SIDE TRIANGLES
-        vertices.push(...[
-            Math.cos(angle + diff), 1, Math.sin(angle + diff)
-        ]);
-        vertices.push(...[
-            Math.cos(angle + diff), 0, Math.sin(angle + diff)
-        ]);
-        vertices.push(...[
-            Math.cos(angle), 0, Math.sin(angle)
-        ]);
-
-        vertices.push(...[
-            Math.cos(angle + diff), 1, Math.sin(angle + diff)
-        ]);
-        vertices.push(...[
-            Math.cos(angle), 1, Math.sin(angle)
-        ]);
-        vertices.push(...[
-            Math.cos(angle), 0, Math.sin(angle)
-        ]);
-
-        // TOP TRIANGLE
-        vertices.push(...[0, 0, 0]); // center
-        vertices.push(...[
-            Math.cos(angle), 1, Math.sin(angle)
-        ]);
-        vertices.push(...[
-            Math.cos(angle + diff), 1, Math.sin(angle + diff)
-        ]);
-
+        vertexPositions.push([Math.cos(angle), 0, Math.sin(angle)]);
         angle += diff;
     }
-    return vertices;
-}
-
-function generateNormals(slices) {
-    normals = [];
-    var diff = utils.degToRad(360/slices);
-    var angle = diff/2;
-    for(let i = 0; i < slices; i++) {
-        // BOTTOM
-        normals.push(...utils.copyArray([0, -1, 0], 3));
-        // SIDE
-        normals.push(...utils.copyArray(
-            [Math.cos(angle), 0, Math.sin(angle)], 6
-        ));
-        // TOP
-        normals.push(...utils.copyArray([0, 1, 0], 3));
-        angle += diff;
-    }
-    return normals;
+    return vertexPositions;
 }

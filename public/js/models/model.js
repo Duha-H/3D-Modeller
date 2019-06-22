@@ -1,5 +1,6 @@
 import '../gl-setup/gl-matrix.js';
 import * as utils from '../utils/utils.js';
+import * as ModelGenerator from '../model-management/modelGenerator.js';
 
 /**
  * Definition of generic 3D Model object
@@ -10,13 +11,13 @@ const {mat4} = glMatrix; // object destructuring to get mat4
 
 export class Model {
 
-    constructor(gl, vertices, normals) {
+    constructor(gl, vertices) {
 
         this.gl = gl;
-        this.height = 1;
+        this.height = 0.5;
 
-        this.vertices = vertices;
-        this.normals = normals;
+        this.vertices = ModelGenerator.generateModelVertices(vertices, this.height);
+        this.normals = ModelGenerator.generateNormals(this.vertices);
         
         // generate random face colors
         this.color = [];
@@ -114,20 +115,13 @@ export class Model {
      */
     setHeight(newHeight) {
         this.height = newHeight;
-        for(let i = 1; i < this.vertices.length; i+=3) {
-            this.vertices[i] = this.vertices[i] > 0 ? newHeight : this.vertices[i];
-        }
+        //for(let i = 1; i < this.vertices.length; i+=3) {
+        //    this.vertices[i] = this.vertices[i] > 0 ? newHeight : this.vertices[i];
+        //}
+        ModelGenerator.updateModelHeight(this.vertices, this.height);
         // update vertex buffer data
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
-    }
-
-    /**
-     * Adds intermediate base polygons to model vertices
-     * @param {Number} subPolygons Number of sub-polygons/sections in mesh redefinition
-     */
-    convertToMesh(subPolygons) {
-        var subPlgns = subPolygons === undefined ? 4 : subPolygons;
     }
 
 }
