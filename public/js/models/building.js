@@ -78,16 +78,6 @@ export class Building {
         }
     }
 
-    convertToMesh(controlPoints) {
-        let building = this.types[this.floorType];
-        building.convertToMesh(controlPoints);
-    }
-
-    resetMesh() {
-        let building = this.types[this.floorType];
-        building.resetMesh();
-    }
-
     /**
      * Draw building
      * @param {Object} uniformLocations Renderer uniform locations
@@ -101,7 +91,7 @@ export class Building {
         let modelMatrix = mat4.create();
 
         // apply building scale and color (common attributes)
-        //floor.setHeight(8); // reduce default floor height (uses fixed floor height for all 3d model types)
+        //floor.setHeight(0.5); // reduce default floor height (uses fixed floor height for all 3d model types)
         floor.setColor(this.color);
         mat4.translate(modelMatrix, modelMatrix, [this.posX, -1, this.posZ]);
         mat4.scale(modelMatrix, modelMatrix, [this.scaleX, this.scaleY, this.scaleZ]);

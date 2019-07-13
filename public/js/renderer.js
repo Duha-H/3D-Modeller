@@ -74,9 +74,5 @@ export function Renderer(canvas) {
 
     }
 
-    this.soup = () => {
-        return 42;
-    }
-
 }
 

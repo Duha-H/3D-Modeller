@@ -58,14 +58,6 @@ export function EventHandler(scene, indicator) {
     window.addEventListener("resize", resizeViewport, false);
     
     handleControlButtons();
-
-    const modifyButton = document.getElementById('modify-button');
-    modifyButton.addEventListener("click", () => {
-        //console.log('event 2!');
-        //let customizer = linkedScene.profileCustomizer;
-        //linkedScene.buildings[linkedScene.currBldg].convertToMesh(customizer.cps);
-        //linkedScene.draw();
-    }, false);
 }
 
 

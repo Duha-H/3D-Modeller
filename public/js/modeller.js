@@ -26,6 +26,7 @@ export class Modeller extends Scene {
         this.grid = new Grid(this.gl, 100, 100, 2);
         this.showGrid = true;
         this.base = new Cube(this.gl);
+        this.cubes = this.createCubes();
         this.buildings = [new Building(this.gl)];
         this.currBldg = 0; // currently active building
     }
@@ -39,16 +40,26 @@ export class Modeller extends Scene {
     }
 
     /**
+     * Creates objects used in this particular scene
+     */
+    createCubes() {
+        
+        var cubes = [];
+        for(var j = 0; j < 16; j++) {
+            let newCube = new Cube(this.gl);
+            cubes.push(newCube);
+        }
+
+        return cubes;
+    }
+
+    /**
      * Add new building to scene
      */
     addNewBuilding() {
         var building = new Building(this.gl);
         this.buildings.push(building);
         this.currBldg++;
-    }
-
-    linkProfileCustomizer(customizer) {
-        this.profileCustomizer = customizer;
     }
 
     /**
