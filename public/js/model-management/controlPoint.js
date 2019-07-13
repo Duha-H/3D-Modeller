@@ -11,6 +11,7 @@ export class ControlPoint {
         this.x = x;
         this.y = y;
         this.locked = false;
+        this.dx = 0; // change in point position (x direction)
     }
 
     draw() {
@@ -44,6 +45,7 @@ export class ControlPoint {
      * @param {Number} dx Change in y coordinate
      */
     updatePosition(dx, dy) {
+        this.dx = dx;
         this.x += dx;
         this.y += dy;
     }

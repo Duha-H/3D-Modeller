@@ -112,6 +112,10 @@ export class ProfileCustomizer {
             this.cps[idx].updatePosition(dx, 0);
             // redraw control points
             this.draw();
+            if(this.linkedScene) {
+                this.linkedScene.buildings[this.linkedScene.currBldg].convertToMesh(this.cps);
+                this.linkedScene.draw();
+            }
         } 
         
     }
@@ -150,5 +154,22 @@ export class ProfileCustomizer {
         this.cps = [];
         this.initCtlPts();
         this.draw();
+        if(this.linkedScene) {
+            this.linkedScene.buildings[this.linkedScene.currBldg].resetMesh();
+            this.linkedScene.draw();
+        }
+    }
+
+    /**
+     * Resets delta x values of control points
+     */
+    resetCtlPtDeltas() {
+        this.cps.forEach((point) => {
+            point.dx = 0;
+        });
+    }
+
+    linkScene(scene) {
+        this.linkedScene = scene;
     }
 }
