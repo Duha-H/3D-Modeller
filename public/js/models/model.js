@@ -1,6 +1,7 @@
 import '../gl-setup/gl-matrix.js';
 import * as utils from '../utils/utils.js';
 import * as ModelGenerator from '../model-management/modelGenerator.js';
+import { ModelController } from '../model-management/modelController.js';
 
 /**
  * Definition of generic 3D Model object
@@ -11,15 +12,18 @@ const {mat4} = glMatrix; // object destructuring to get mat4
 
 export class Model {
 
-    constructor(gl, vertices) {
+    constructor(gl, vertexPositions) {
 
         this.gl = gl;
-        this.height = 0.5;
+        this.height = 8;
 
-        this.vertices = ModelGenerator.generateModelVertices(vertices, this.height);
-        this.normals = ModelGenerator.generateNormals(this.vertices);
+        this.vertexPositions = vertexPositions;
+        this.controller = new ModelController(vertexPositions, this.height);
+        this.vertices = this.controller.modelVertices;
+        //this.vertices = ModelGenerator.convertToMesh(this.vertexPositions, this.height, 2);
+        this.normals = this.controller.modelNormals;
         
-        // generate random face colors
+        // generate face colors
         this.color = [];
         let faceColor = [0.5, 0.8, 0.5];
         for (let vertex = 0; vertex < this.vertices.length/3; vertex++) {
@@ -111,17 +115,38 @@ export class Model {
 
     /**
      * Adjust default model height
-     * @param {Number} h New block height
+     * @param {Number} newHeight New model height
      */
     setHeight(newHeight) {
+        // THIS IS BROKEN
         this.height = newHeight;
-        //for(let i = 1; i < this.vertices.length; i+=3) {
-        //    this.vertices[i] = this.vertices[i] > 0 ? newHeight : this.vertices[i];
-        //}
-        ModelGenerator.updateModelHeight(this.vertices, this.height);
+        this.controller.updateHeight(this.height);
         // update vertex buffer data
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
+    }
+
+    convertToMesh(controlPoints) {
+        this.controller.updateMeshSections(controlPoints);
+        console.log(this.vertices.length, 'vertices');
+        this.vertices = this.controller.modelVertices;
+        this.normals = this.controller.modelNormals;
+        // update vertex buffer data
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.normals), this.gl.STATIC_DRAW);
+    }
+
+    resetMesh() {
+        this.controller.resetMeshSections();
+        this.vertices = this.controller.modelVertices;
+        this.normals = this.controller.modelNormals;
+        // update vertex buffer data
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.normals), this.gl.STATIC_DRAW);
     }
 
 }

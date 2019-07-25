@@ -20,12 +20,18 @@ export function CustomizationHandler(profileController) {
     this.canvas.addEventListener("mouseout", mouseUp, false);
     this.canvas.addEventListener("mousemove", mouseMove, false);
 
+    const modifyButton = document.getElementById('modify-button');
+    modifyButton.addEventListener("click", () => {
+        //console.log('event 1!');
+        document.getElementById('profile-customizer').style.opacity = 1;
+    }, false);
+
     // Bind control point lock events
     const cp2lock = document.getElementById('cp2-lock');
     cp2lock.addEventListener("change", () => {
         lockControlPt(1);
     }, false);
-    var cp3lock = document.getElementById('cp3-lock');
+    const cp3lock = document.getElementById('cp3-lock');
     cp3lock.addEventListener("change", () => {
         lockControlPt(2);
     }, false);
@@ -49,7 +55,7 @@ function mouseDown(e) {
 
 function mouseUp() {
     drag = false;
-
+    linkedController.resetCtlPtDeltas();
 }
 
 function mouseMove(e) {

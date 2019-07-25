@@ -41,6 +41,8 @@ function main() {
     // create scene and bind renderer
     scene = new Modeller(renderer);
     profileCustomizer = new ProfileCustomizer(profileCanvas);
+    //scene.linkProfileCustomizer(profileCustomizer);
+    profileCustomizer.linkScene(scene);
     
     // set up event handlers
     sceneEventHandler = new EventHandler(scene);
