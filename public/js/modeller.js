@@ -16,6 +16,9 @@ const {mat4} = glMatrix; // object destructuring to get mat4
 var modelViewMatrix = mat4.create();
 var normalMatrix = mat4.create();
 var modelMatrix = mat4.create();
+var baseXBound = 50;
+var baseZBound = 50;
+
 
 export class Modeller extends Scene {
 
@@ -52,6 +55,21 @@ export class Modeller extends Scene {
     }
 
     /**
+     * Dynamically updates size of scene base if a building reaches the edge (more space is required)
+     */
+    updateBase() {
+        let xBound = baseXBound - 2;
+        let zBound = baseZBound - 2;
+        let posX = this.buildings[this.currBldg].posX;
+        let posZ = this.buildings[this.currBldg].posZ;
+        if (posX >= xBound || posX <= -xBound || posZ >= zBound || posZ <= -zBound) {
+            baseXBound += 10;
+            baseZBound += 10;
+            this.grid = new Grid(this.gl, baseXBound * 2, baseZBound * 2, 2);
+        }
+    }
+
+    /**
      * Apply transformations and draw scene objects
      */
     draw() {
@@ -65,7 +83,7 @@ export class Modeller extends Scene {
         // draw base
         modelMatrix = mat4.create(); // matrix used to apply tranformations to base
         this.base.translate([0, -1.1, 0], modelMatrix);
-        this.base.scale([50, 1, 50], modelMatrix);
+        this.base.scale([baseXBound, 1, baseZBound], modelMatrix);
         this.base.setHeight(0.08);
 
         this.updateMatrixUniforms(modelMatrix);
