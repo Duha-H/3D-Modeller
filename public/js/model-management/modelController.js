@@ -8,7 +8,7 @@ export class ModelController {
         this.vertexPositions = vertexPositions;
         this.height = height;
         this.floorPolygons = modelGenerator.generateFloorPolygons(vertexPositions, this.height, 3);
-        console.log(this.floorPolygons.length, 'floor polygons');
+        //console.log(this.floorPolygons.length, 'floor polygons');
         this.modelVertices = modelGenerator.generateMesh(this.floorPolygons);
         this.modelNormals = modelGenerator.generateNormals(this.modelVertices);
     }

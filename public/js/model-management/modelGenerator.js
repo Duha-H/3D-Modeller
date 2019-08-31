@@ -3,6 +3,7 @@ import * as utils from '../utils/utils.js';
  * Module of functions for generating vertices and normals of a given model
  */
 
+
 /**
  * Returns a list of vertices defining model triangles
  * @param {Array} vertexPositions 2D list of vertex positons of a given base polygon (bottom)
@@ -91,7 +92,8 @@ export function updateModelHeight(vertices, newHeight) {
 
 
 /**
- * Returns a 3D array of polygon vertex positions at various building sub-sections based on a given number of sub-polygons/sections.
+ * Returns a 3D array of polygon vertex positions at various building sub-sections based 
+ * on a given number of sub-polygons/sections.
  * Number of sub-polygons is equal to numSection + 1 (returned array has length = numSections + 1)
  * @param {Array} vertexPositions 2D array of polygon vertex positions (outer vertices only)
  * @param {Number} height Specified height of model
@@ -191,7 +193,12 @@ function getVertexPositionsWithUpdatedHeight(vertexPositions, height) {
     return updatedVertexPositions;
 }
 
-
+/**
+ * Returns an updated 3D array of floor polygon vertex positions based on changes in control
+ * point positions at different heights
+ * @param {Array} floorPolygons 3D array of floor polygon vertex positions at different floor heights
+ * @param {Array} controlPoints 1D array of control points affecting change on floor polygon vertex positions
+ */
 export function updateFloorPolygons(floorPolygons, controlPoints) {
     if(floorPolygons.length !== controlPoints.length) {
         console.log('Error: mismatched lengths of floor polygons and control points');
@@ -201,37 +208,28 @@ export function updateFloorPolygons(floorPolygons, controlPoints) {
     const sections = controlPoints.length - 1;
     for(let i = 0; i < controlPoints.length; i++) {
         if(controlPoints[sections - i].dx === 0) {  // control point position has not changed
-            console.log('no change at', i);
             updatedPolygons.push(floorPolygons[i]); // push polygon unchanged   
             continue;
         }
-        let dx = controlPoints[sections - i].dx * 0.3;
-        //let updatedFloor = floorPolygons[i];
+        let dx = controlPoints[sections - i].dx * 0.09; // control point position change
         let updatedFloor = [];
         for(let j = 0; j < floorPolygons[i].length; j++) {
             let vertex = floorPolygons[i][j];
-            //console.log('old:', vertex[0], vertex[1], vertex[2]);
-            const x_ = vertex[0];
-            const z_ = vertex[2];
-            let x2 = Math.pow(x_, 2);
-            let z2 = Math.pow(z_, 2);
-            //console.log('x:', x2);
-            //console.log('z:', z2);
-            let mag = Math.sqrt(x2 + z2);
-            //console.log(mag);
-            let theta = utils.degToRad(Math.asin((z_ / mag)));
-            //console.log(theta);
-            const flagx = x_ < 0 ? -1 : 1;
-            const flagz = z_ < 0 ? -1 : 1;
-            let x = x_ + (theta * dx * flagx);
-            let z = z_ + (theta * dx * flagz);
-            //let x = x_;
-            //let z = z_;
-            //vertex[0] = x;
-            //vertex[2] = z;
-            //console.log('new values: ', floorPolygons[i][j][0], floorPolygons[i][j][1], floorPolygons[i][j][2]);
-            updatedFloor.push([x, vertex[1], z]); // add updated vertex to floor polygon
-            //console.log('new:', [x, vertex[1], z]);
+
+            const x = vertex[0];
+            const z = vertex[2];
+            let mag = Math.sqrt((x ** 2) + (z ** 2)); // calculate magnitude of vector along which vertex updates
+            let theta = Math.asin(z / mag); // calculate vector direction
+            
+            let flag = 1; // flag to properly determine direction of vector
+            if ((x < 0 && z > 0) || (x > 0 && z < 0)) {
+                flag = -1;
+            }
+            let newX = x + (theta * dx * flag);
+            let newZ = z + (theta * dx);
+            
+            updatedFloor.push([newX, vertex[1], newZ]); // add updated vertex to floor polygon
+            
         }
         updatedPolygons.push(updatedFloor); // push updated polygon vertices
     }

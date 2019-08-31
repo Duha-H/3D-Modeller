@@ -107,7 +107,7 @@ export class ProfileCustomizer {
      * @param {Number} dx Change in x coordinate
      */
     updateCtlPtPosition(idx, dx) {
-        // check that a point at the given index exitst
+        // check that a point at the given index exists
         if(this.cps[idx] !== undefined) {
             this.cps[idx].updatePosition(dx, 0);
             // redraw control points
@@ -130,7 +130,9 @@ export class ProfileCustomizer {
         var point;
         for(var i = 0; i < this.numPoints; i++) {
             point = this.cps[i];
+            console.log(point.x, point.y);
             if(point.isSelected(mouseX, mouseY)) {
+                console.log("selected");
                 return i;
             }
         }
