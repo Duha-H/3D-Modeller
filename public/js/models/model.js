@@ -15,7 +15,7 @@ export class Model {
     constructor(gl, vertexPositions) {
 
         this.gl = gl;
-        this.height = 1;
+        this.height = 10;
 
         this.vertexPositions = vertexPositions;
         this.controller = new ModelController(vertexPositions, this.height);
@@ -128,7 +128,7 @@ export class Model {
 
     convertToMesh(controlPoints) {
         this.controller.updateMeshSections(controlPoints);
-        console.log(this.vertices.length, 'vertices');
+        //console.log(this.vertices.length, 'vertices');
         this.vertices = this.controller.modelVertices;
         this.normals = this.controller.modelNormals;
         // update vertex buffer data

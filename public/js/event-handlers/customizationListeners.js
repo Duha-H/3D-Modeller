@@ -1,4 +1,4 @@
-var linkedController;
+var linkedCustomizer;
 var canvasX;    // canvas x position (top left corner)
 var canvasY;    // canvas y position (top left corner)
 // mouse handling variables
@@ -7,9 +7,9 @@ var oldX, oldY;
 var dx = 0, dy = 0;
 var selectedIdx = -1;
 
-export function CustomizationHandler(profileController) {
-    linkedController = profileController;
-    this.canvas = linkedController.canvas;
+export function CustomizationHandler(profileCustomizer) {
+    linkedCustomizer = profileCustomizer;
+    this.canvas = linkedCustomizer.canvas;
     // get canvas position
     var rect = this.canvas.getBoundingClientRect();
     canvasX = parseInt(rect.left);
@@ -45,7 +45,7 @@ function mouseDown(e) {
     var mouseX = e.pageX - canvasX;
     var mouseY = e.pageY - canvasY;
     // retreive index of selectec/clicked point if available
-    selectedIdx = linkedController.detectSelection(mouseX, mouseY);
+    selectedIdx = linkedCustomizer.detectSelection(mouseX, mouseY);
     drag = true;
     oldX = mouseX;
     oldY = mouseY;
@@ -55,7 +55,7 @@ function mouseDown(e) {
 
 function mouseUp() {
     drag = false;
-    linkedController.resetCtlPtDeltas();
+    linkedCustomizer.resetCtlPtDeltas();
 }
 
 function mouseMove(e) {
@@ -65,7 +65,7 @@ function mouseMove(e) {
     var mouseY = e.pageY - canvasY;
     dx = mouseX - oldX;
     dy = mouseY - oldY;
-    linkedController.updateCtlPtPosition(selectedIdx, dx);
+    linkedCustomizer.updateCtlPtPosition(selectedIdx, dx);
 
     oldX = e.pageX - canvasX;
     oldY = e.pageY - canvasY;
@@ -76,12 +76,12 @@ function mouseMove(e) {
  * @param {Number} idx Index of control point to lock
  */
 function lockControlPt(idx) {
-    linkedController.lockControlPt(idx);
+    linkedCustomizer.lockControlPt(idx);
 }
 
 /**
  * Resets the positions of control points of the linked customizer
  */
 function resetCtlPts() {
-    linkedController.resetCtlPts();
+    linkedCustomizer.resetCtlPts();
 }

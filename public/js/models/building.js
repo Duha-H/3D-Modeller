@@ -79,8 +79,11 @@ export class Building {
     }
 
     convertToMesh(controlPoints) {
-        let building = this.types[this.floorType];
-        building.convertToMesh(controlPoints);
+        // apply control point changes to all model types of current building
+        for (let i = 0; i < Object.keys(this.types).length; i++) {
+            let building = this.types[i];
+            building.convertToMesh(controlPoints);
+        }
     }
 
     resetMesh() {

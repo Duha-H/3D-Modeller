@@ -113,6 +113,7 @@ export class ProfileCustomizer {
             // redraw control points
             this.draw();
             if(this.linkedScene) {
+                // apply changes to current building in scene
                 this.linkedScene.buildings[this.linkedScene.currBldg].convertToMesh(this.cps);
                 this.linkedScene.draw();
             }
@@ -130,9 +131,7 @@ export class ProfileCustomizer {
         var point;
         for(var i = 0; i < this.numPoints; i++) {
             point = this.cps[i];
-            console.log(point.x, point.y);
             if(point.isSelected(mouseX, mouseY)) {
-                console.log("selected");
                 return i;
             }
         }

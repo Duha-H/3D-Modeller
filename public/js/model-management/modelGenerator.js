@@ -38,19 +38,12 @@ export function generateMesh(floorPolygons) {
         
         let v1 = i;
         let v2 = i + 1;
-        //console.log('before:', floorPolygons[v1], floorPolygons[v2]);
-        let bottomPolygon = floorPolygons[v1].filter((element) => {
-            return (element[0] !== 0 && element[2] !== 0); // remove center vertex position
-        });
-        let topPolygon = floorPolygons[v2].filter((element) => {
-            return (element[0] !== 0 && element[2] !== 0); // remove center vertex position
-        });
-        //console.log('after:', bottomPolygon, topPolygon);
-        //console.log(bottomPolygon.length, topPolygon.length);
+        
+        let bottomPolygon = floorPolygons[v1];
+        let topPolygon = floorPolygons[v2];
         
         let sectionTriangles = getSideTriangles(bottomPolygon, topPolygon);
         updatedVertices.push(...sectionTriangles);
-        //console.log(sectionTriangles.length/6, 'section triangles generated for section', i);
     }
     return updatedVertices;
 }
@@ -102,7 +95,6 @@ export function updateModelHeight(vertices, newHeight) {
 export function generateFloorPolygons(vertexPositions, height, numSections) {
     let polygons = [];
     let floorHeight = height / numSections;
-    //console.log('generating floor polygons:', numSections);
     for(let i = 0; i <= numSections; i++) {
         let polygonVertexPositions = getVertexPositionsWithUpdatedHeight(vertexPositions, floorHeight * i);
         if(isNaN(polygonVertexPositions[i][2]))
@@ -151,7 +143,7 @@ function getSideTriangles(bottomPolygonVertices, topPolygonVertices) {
     // side triangles from bottom and top polygon vertex POSITIONS
     let vertices = [];
     if(bottomPolygonVertices.length !== topPolygonVertices.length) {
-        console.log('Error: polygon vertex lengths mismatch');
+        console.log('Error: getting side triangles; polygon vertex lengths mismatch');
         return;
     }
     const numFaces = bottomPolygonVertices.length;
@@ -168,6 +160,16 @@ function getSideTriangles(bottomPolygonVertices, topPolygonVertices) {
         vertices.push(...bottomPolygonVertices[v1]);
         vertices.push(...topPolygonVertices[v2]);
         vertices.push(...topPolygonVertices[v1]);
+    }
+    if (numFaces % 2 !== 0) {
+        // add last face if a central vertex exists (i.e. total number of faces is odd)
+        vertices.push(...bottomPolygonVertices[numFaces - 1]);
+        vertices.push(...bottomPolygonVertices[1]);
+        vertices.push(...topPolygonVertices[1]);
+
+        vertices.push(...bottomPolygonVertices[numFaces - 1]);
+        vertices.push(...topPolygonVertices[1]);
+        vertices.push(...topPolygonVertices[numFaces - 1]);
     }
     return vertices;
 }
@@ -219,14 +221,16 @@ export function updateFloorPolygons(floorPolygons, controlPoints) {
             const x = vertex[0];
             const z = vertex[2];
             let mag = Math.sqrt((x ** 2) + (z ** 2)); // calculate magnitude of vector along which vertex updates
-            let theta = Math.asin(z / mag); // calculate vector direction
-            
-            let flag = 1; // flag to properly determine direction of vector
-            if ((x < 0 && z > 0) || (x > 0 && z < 0)) {
-                flag = -1;
-            }
-            let newX = x + (theta * dx * flag);
-            let newZ = z + (theta * dx);
+            // (x, z) + du
+            // normalize
+            let ux = x / mag;
+            let uz = z / mag;
+            // calculate distance change
+            let dux = dx * ux;
+            let duz = dx * uz;
+            // compute new position
+            let newX = x + dux;
+            let newZ = z + duz;
             
             updatedFloor.push([newX, vertex[1], newZ]); // add updated vertex to floor polygon
             
