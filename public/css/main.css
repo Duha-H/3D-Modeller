@@ -36,6 +36,7 @@ h1 {
 
 canvas {
     display: block;
+    scroll-behavior: auto;
 }
 
 p {
@@ -145,16 +146,20 @@ p {
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 0px;
     opacity: 0.4;
-    filter: var(--filter);
     max-width: 23.6px;
+    filter: var(--filter);
 }
 
 .tab-button.active {
     opacity: 1;
 }
 
+#tab-icon {
+    filter: var(--filter);
+}
+
 div#controls {
-    display: none;
+    display: flex;
 }
 
 #keys {
@@ -196,7 +201,7 @@ div#file-form {
 }
 
 div#customize {
-    display: flex;
+    display: none;
 }
 
 .file {
@@ -261,10 +266,61 @@ input#file-upload {
     border: 1px solid var(--border-color);
 }
 
+#modeller {
+    margin: 0 0 0 0;
+    min-width: 500px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.range-slider {
+    height: 25px;
+    margin: auto 0;
+    align-items: center;
+    text-align: right;
+    justify-content: center;
+    padding: 1px 10px;
+}
+
+#zoom-slider {
+    height: 2px;
+    border-radius: 5px;
+    outline: none;
+    direction: rtl;
+    margin: auto 0;
+    background: var(--border-color);
+}
+
+#zoom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%; 
+    background: rgb(138, 230, 236);
+    cursor: pointer;
+}
+
+#zoom-slider::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgb(138, 230, 236);
+    cursor: pointer;
+}
+
+#status-bar-icon {
+    height: 18px;
+    filter: var(--filter);
+}
+
 #main-canvas {
     margin: 0 0 0 0;
     min-width: 500px;
-    min-height: 100px;
+    min-height: 97%;
+    border-radius: 0%;
+    border-bottom: 1px solid var(--border-color);
 }
 
 #navigator-canvas {

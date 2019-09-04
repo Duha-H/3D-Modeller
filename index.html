@@ -84,9 +84,9 @@
     <div id="content">
         <div id="sidebar">
             <div id="content-tabs">
-                <input id="controls" name="submit" type="image" src="./public/assets/icon_controls.png" alt="Submit" id="controls" class="tab-button" title="Controls"/>
-                <input id="file-form" name="submit" type="image" src="./public/assets/icon_file.png" alt="Submit" id="controls" class="tab-button" title="File"/>
-                <input id="customize" name="submit" type="image" src="./public/assets/icon_customize.png" alt="Submit" id="controls" class="tab-button active" title="Customize"/>
+                <input id="controls" name="submit" type="image" src="./public/assets/icon_controls.png" alt="Submit" class="tab-button" title="Controls"/>
+                <input id="file-form" name="submit" type="image" src="./public/assets/icon_file.png" alt="Submit" class="tab-button" title="File"/>
+                <input id="customize" name="submit" type="image" src="./public/assets/icon_customize.png" alt="Submit" class="tab-button active" title="Customize"/>
                 
             </div>
             
@@ -97,7 +97,7 @@
                     <button class="ctrl-key" id="ctrl-86" title="Translate (v)"><img id="ctrl-icon" src="./public/assets/icon_d_move.png"/></button>
                     <button class="ctrl-key" id="ctrl-69" title="Extrude (e)"><img id="ctrl-icon" src="./public/assets/icon_d_extrude.png"/></button>
                     <button class="ctrl-key" id="ctrl-90" title="Zoom (z)"><img id="ctrl-icon" src="./public/assets/icon_d_zoom.png"/></button>
-                    <button class="ctrl-key" id="ctrl-80" title="Pan (p)"><img id="ctrl-icon" src="./public/assets/icon_d_scale.png"/></button>
+                    <button class="ctrl-key" id="ctrl-80" title="Pan (p)"><img id="ctrl-icon" src="./public/assets/icon_d_pan.png"/></button>
                     <button class="ctrl-key" id="ctrl-79" title="Orbit (o)"><img id="ctrl-icon" src="./public/assets/icon_d_orbit.png"/></button>
                     <button class="ctrl-key" id="ctrl-78" title="New (n)"><img id="ctrl-icon" src="./public/assets/icon_d_new.png"/></button>
                     <button class="ctrl-key" id="ctrl-70" title="Change Style (f)"><img id="ctrl-icon" src="./public/assets/icon_d_change.png"/></button>
@@ -135,8 +135,15 @@
     
             </div>
         </div>
+        <div id="modeller" >
+            <canvas id="main-canvas" width="1700" height="630">This browser does not seem to support WebGL</canvas>
+            <div class="range-slider">
+                <img id="status-bar-icon" src="./public/assets/icon_d_zoom.png"/>
+                <input type="range" min="0.5" max="100" value="30" step="0.5" id="zoom-slider" onkeydown="return false;" >
+            </div>
+        </div>
         
-        <canvas id="main-canvas" width="1700" height="630">This browser does not seem to support WebGL</canvas>
+        
         <!--
         -->
         <canvas id="navigator-canvas" width="150" height="63"></canvas>

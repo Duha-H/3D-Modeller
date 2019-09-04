@@ -15,7 +15,7 @@ export class Model {
     constructor(gl, vertexPositions) {
 
         this.gl = gl;
-        this.height = 10;
+        this.height = 1;
 
         this.vertexPositions = vertexPositions;
         this.controller = new ModelController(vertexPositions, this.height);
