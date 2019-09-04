@@ -7,30 +7,38 @@ import '../gl-setup/gl-matrix.js';
  */
 
 var canvas;
-const {mat4} = glMatrix;
-const {vec3} = glMatrix;
+var linkedScene;
 // camera position parameters
 const MAX_CAM_DIST = 100;
 const MIN_CAM_DIST = 0.5;
+const MOUSE_DRAG_RATE = 0.0016;
 var drag = false;
 var oldX, oldY;
 var dx = 0, dy = 0;
-var linkedScene;
 var camDistance;
 var navigator;
 var hAngle; // horizontal angle
 var vAngle;   // vertical angle
 var diff;
+var zoomSlider;
+var sliderValue;
 // scene control modes
-const modes = {
-    scale: [83, false],
-    translate: [86, false],
-    extrude: [69, false],
-    zoom: [90, true],
-    pan: [80, false],
-    orbit: [79, true],
-    grid: [71, true]
+var mouseCtrldModes = { // mouse-controlled modeller modes
+    translate:  86,
+    scale:      83,
+    extrude:    69,
+    orbit:      79,
+    pan:        80  
 };
+var keyboardCtrldModes = {  // keyboard-controlled modeller modes
+    zoom:       90
+};
+var activeMouseMode = mouseCtrldModes.orbit;
+var activeKeyboardMode = keyboardCtrldModes.zoom;
+var gridState = {
+    code: 71,
+    active: true
+}
 
 /**
  * Sets up window and canvas event listeners and applies events to target scene
@@ -54,17 +62,20 @@ export function EventHandler(scene, indicator) {
     canvas.addEventListener("mousemove", mouseMove, false);
     canvas.addEventListener("mouseout", mouseUp, false);
     //canvas.addEventListener("click", onClick2, false);
-    window.addEventListener("keydown", (e) => {keyboardHandler(e.keyCode)}, false);
+    window.addEventListener("keydown", (e) => {
+        keyboardHandler(e.keyCode)
+    }, false);
     window.addEventListener("resize", resizeViewport, false);
     
-    handleControlButtons();
+    handleControlButtons(); // assign event listeners and set active/inactive UI elements
 
-    const modifyButton = document.getElementById('modify-button');
-    modifyButton.addEventListener("click", () => {
-        //console.log('event 2!');
-        //let customizer = linkedScene.profileCustomizer;
-        //linkedScene.buildings[linkedScene.currBldg].convertToMesh(customizer.cps);
-        //linkedScene.draw();
+    zoomSlider = document.getElementById('zoom-slider');
+    sliderValue = zoomSlider.value;
+    zoomSlider.addEventListener("input", () => {
+        var newVal = zoomSlider.value;
+        camDistance -= (sliderValue - newVal);
+        linkedScene.updateCamera(vAngle, hAngle, camDistance);
+        sliderValue = newVal;
     }, false);
 }
 
@@ -95,26 +106,48 @@ function mouseUp(e) {
 function mouseMove(e) {
     if (!drag) return false;
 
-    if (modes.orbit[1]) { // check if camera orbit mode is activated
-        dx = (e.pageX - oldX);
-        dy = (e.pageY - oldY);
+    dx = (e.pageX - oldX);
+    dy = (e.pageY - oldY);
+    oldX = e.pageX;
+    oldY = e.pageY;
+
+    if (activeMouseMode === mouseCtrldModes.orbit) { // check if camera orbit mode is activated
         hAngle += dx * diff;
         vAngle = utils.clamp(vAngle + diff * dy, 1, 89); // maintain angle between 1 and 89 degrees
-        oldX = e.pageX;
-        oldY = e.pageY;
         // update scene
         linkedScene.updateCamera(vAngle, hAngle, camDistance);
         if(navigator)   // update navigator view if not null
             navigator.updateCamera(vAngle, hAngle, 30);
     }
-    if (modes.pan[1]) {
-        dx = (e.pageX - oldX);
-        dy = (e.pageY - oldY);
-        oldX = e.pageX;
-        oldY = e.pageY;
+    else if (activeMouseMode === mouseCtrldModes.pan) {
         // update scene
         linkedScene.camera.panCamera(dx * 0.1, dy * 0.1);
         linkedScene.draw();
+    }
+    else if (activeMouseMode === mouseCtrldModes.extrude) {
+        // update scene
+        linkedScene.buildings[linkedScene.currBldg].scaleY -= (dy * MOUSE_DRAG_RATE * camDistance);
+        linkedScene.draw();
+    }
+    else if (activeMouseMode === mouseCtrldModes.translate) {
+        let v = Math.sqrt( (dx ** 2) + (dy ** 2) );
+        let theta = v != 0 ? Math.asin(dx / v) : 1;
+        let flagx = ((dx < 0 && dy > 0) || (dx > 0 && dy < 0)) ? -1 : 1;
+        let flagz = dy < 0 ? -1 : 1;
+        linkedScene.buildings[linkedScene.currBldg].posX += MOUSE_DRAG_RATE * camDistance * v * (Math.sin(theta + utils.degToRad(90 - hAngle)) ) * flagx;
+        linkedScene.buildings[linkedScene.currBldg].posZ += MOUSE_DRAG_RATE * camDistance * v * (Math.cos(theta + utils.degToRad(90 - hAngle)) ) * flagz;
+        linkedScene.updateBase();
+        linkedScene.draw();
+    }
+    else if (activeMouseMode === mouseCtrldModes.scale) {
+        let mag = Math.sqrt( (dx ** 2) + (dy ** 2) );
+        let theta = mag != 0 ? Math.asin(dx / mag) : 1;
+        linkedScene.buildings[linkedScene.currBldg].scaleX += MOUSE_DRAG_RATE * camDistance * mag * (Math.sin(theta + utils.degToRad(90 - hAngle)) );
+        linkedScene.buildings[linkedScene.currBldg].scaleZ += MOUSE_DRAG_RATE * camDistance * mag * (Math.cos(theta + utils.degToRad(90 - hAngle)) );
+        linkedScene.draw();
+    }
+    else {
+        return false;
     }
     
 }
@@ -126,68 +159,83 @@ function mouseMove(e) {
 function keyboardHandler(keyCode) {
 
     switch (keyCode) {
+        // TODO: REMOVE ARROW CONTROLS
         case 37:    // Left Arrow
-            if (modes.translate[1]) { // translate mode
+            // TEMP
+            if (activeMouseMode === mouseCtrldModes.translate) { // translate mode
                 linkedScene.buildings[linkedScene.currBldg].posX--;
+                linkedScene.updateBase();
                 linkedScene.draw();
             }
-            if (modes.scale[1] && linkedScene.buildings[linkedScene.currBldg].scaleX > 0.5) {    // scale mode
+            if (activeMouseMode === mouseCtrldModes.scale && linkedScene.buildings[linkedScene.currBldg].scaleX > 0.5) {    // scale mode
                 linkedScene.buildings[linkedScene.currBldg].scaleX -= 0.5;
                 linkedScene.draw();
             }
             break;
 
         case 38:    // Up Arrow
-            if (modes.zoom[1] && camDistance > MIN_CAM_DIST) {     // zoom mode
-                camDistance -= 0.5; // zoom in
-                linkedScene.updateCamera(vAngle, hAngle, camDistance);
-            }
-            if (modes.extrude[1]) {  // extrude mode
+            // TEMP
+            if (activeMouseMode === mouseCtrldModes.extrude) {  // extrude mode
                 linkedScene.buildings[linkedScene.currBldg].scaleY++;
                 linkedScene.draw();
             }
-            if (modes.translate[1]) { // translate mode
+            if (activeMouseMode === mouseCtrldModes.translate) { // translate mode
                 linkedScene.buildings[linkedScene.currBldg].posZ--;
+                linkedScene.updateBase();
                 linkedScene.draw();
             }
-            if (modes.scale[1]) {    // scale mode
+            if (activeMouseMode === mouseCtrldModes.scale) {    // scale mode
                 linkedScene.buildings[linkedScene.currBldg].scaleZ += 0.5;
                 linkedScene.draw();
             }
             break;
         
         case 39:    // Right Arrow
-            if (modes.translate[1]) { // translate mode
+            if (activeMouseMode === mouseCtrldModes.translate) { // translate mode
                 linkedScene.buildings[linkedScene.currBldg].posX++;
+                linkedScene.updateBase();
                 linkedScene.draw();
             }
-            if (modes.scale[1]) {    // scale mode
+            if (activeMouseMode === mouseCtrldModes.scale) {    // scale mode
                 linkedScene.buildings[linkedScene.currBldg].scaleX += 0.5;
                 linkedScene.draw();
             }
             break;
 
         case 40:    // Down Arrow
-            if (modes.zoom[1] && camDistance <= MAX_CAM_DIST) {     // zoom mode
-                camDistance += 0.5; // zoom out
-                linkedScene.updateCamera(vAngle, hAngle, camDistance);
-            }
-            if (modes.extrude[1] && linkedScene.buildings[linkedScene.currBldg].scaleY > 1) {  // extrude mode
+            if (activeMouseMode === mouseCtrldModes.extrude && linkedScene.buildings[linkedScene.currBldg].scaleY > 1) {  // extrude mode
                 linkedScene.buildings[linkedScene.currBldg].scaleY--;
                 linkedScene.draw();
             }
-            if (modes.translate[1]) { // translate mode
+            if (activeMouseMode === mouseCtrldModes.translate) { // translate mode
                 linkedScene.buildings[linkedScene.currBldg].posZ++;
+                linkedScene.updateBase();
                 linkedScene.draw();
             }
-            if (modes.scale[1] && linkedScene.buildings[linkedScene.currBldg].scaleZ > 0.5) { // scale mode
+            if (activeMouseMode === mouseCtrldModes.scale && linkedScene.buildings[linkedScene.currBldg].scaleZ > 0.5) { // scale mode
                 linkedScene.buildings[linkedScene.currBldg].scaleZ -= 0.5;
                 linkedScene.draw();
             }
             break;
 
+        case 61:    // '+'
+            if (activeKeyboardMode === keyboardCtrldModes.zoom && camDistance > MIN_CAM_DIST) {
+                camDistance -= 0.5; // zoom in
+                zoomSlider.value -= 0.5;
+                linkedScene.updateCamera(vAngle, hAngle, camDistance);
+            }
+            break;
+
+        case 173:   // '-' 
+            if (activeKeyboardMode === keyboardCtrldModes.zoom && camDistance < MAX_CAM_DIST) {
+                camDistance += 0.5; // zoom out
+                zoomSlider.value += 0.5;
+                linkedScene.updateCamera(vAngle, hAngle, camDistance);
+            }            
+            break;
+
         case 67:    // 'c'
-            if(confirm('Are you sure you would like to clear all buildings?')) {
+            if ( confirm('Are you sure you would like to clear all buildings?') ) {
                 linkedScene.buildings = []; // clear buildings
                 linkedScene.currBldg = -1;
                 linkedScene.draw();
@@ -195,11 +243,10 @@ function keyboardHandler(keyCode) {
             break;
         
         case 69:    // 'e'
-            modes.extrude[1] = true;
-            modes.zoom[1] = modes.translate[1] = modes.scale[1] = false;
+            setInactive(activeMouseMode); // deactivate currently-active mode in UI
+            setActive(mouseCtrldModes.extrude);
+            activeMouseMode = mouseCtrldModes.extrude;
             feedback.showSnackbar("Extrude Mode");
-            setInactive([modes.zoom[0], modes.translate[0], modes.scale[0]]);
-            setActive(69);
             break;
 
         case 70:    // 'f'
@@ -209,7 +256,7 @@ function keyboardHandler(keyCode) {
 
         case 71:    // 'g'
             linkedScene.toggleGrid();   // show/hide scene grid
-            toggleActive(71);
+            toggleActive(gridState.code);
             break;
 
         case 78:    // 'n'
@@ -218,41 +265,40 @@ function keyboardHandler(keyCode) {
             break;
         
         case 79:    // 'o'
-            modes.orbit[1] = !modes.orbit[1]; // toggle camera orbitting on/off
-            if (modes.orbit[1]) toggleOrbitPan('Orbit');
-            else feedback.showSnackbar('Orbit Mode off');
+            setInactive(activeMouseMode); // deactivate currently-active mode in UI
+            setActive(mouseCtrldModes.orbit);
+            activeMouseMode = mouseCtrldModes.orbit;
+            feedback.showSnackbar("Orbit Mode");
             break;
         
         case 80:    // 'p'
-            modes.pan[1] = !modes.pan[1]; // toggle camera pan on/off
-            if (modes.pan[1]) toggleOrbitPan('Pan');
-            else feedback.showSnackbar('Pan Mode off');
+            setInactive(activeMouseMode); // deactivate currently-active mode in UI
+            setActive(mouseCtrldModes.pan);
+            activeMouseMode = mouseCtrldModes.pan;
+            feedback.showSnackbar("Pan Mode");
             break;
 
         case 83:    // 's'
-            modes.scale[1] = true;
-            modes.zoom[1] = modes.extrude[1] = modes.translate[1] = false;
-            feedback.showSnackbar('Scale Mode');
-            setInactive([modes.zoom[0], modes.translate[0], modes.extrude[0]]);
-            setActive(83);
+            setInactive(activeMouseMode); // deactivate currently-active mode in UI
+            setActive(mouseCtrldModes.scale);
+            activeMouseMode = mouseCtrldModes.scale;
+            feedback.showSnackbar("Scale Mode");
             break;
 
         case 86:    // 'v'
-            modes.translate[1] = true;
-            modes.zoom[1] = modes.extrude[1] = modes.scale[1] = false;
-            feedback.showSnackbar('Translate Mode');
-            setInactive([modes.zoom[0], modes.extrude[0], modes.scale[0]]);
-            setActive(86);
+            setInactive(activeMouseMode); // deactivate currently-active mode in UI
+            setActive(mouseCtrldModes.translate);
+            activeMouseMode = mouseCtrldModes.translate;
+            feedback.showSnackbar("Translate Mode");
             break;
         
         case 90:    // 'z'
-            modes.zoom[1] = true;
-            modes.extrude[1] = modes.translate[1] = modes.scale[1] = false;
-            feedback.showSnackbar('Zoom Mode');
-            setInactive([modes.extrude[0], modes.translate[0], modes.scale[0]]);
-            setActive(90);
+            setInactive(activeKeyboardMode); // deactivate currently-active mode in UI
+            setActive(keyboardCtrldModes.zoom);
+            activeKeyboardMode = keyboardCtrldModes.zoom;
+            feedback.showSnackbar("Zoom Mode");
             break;
-
+        
         default:
             break;
     }
@@ -267,24 +313,6 @@ function resizeViewport() {
     linkedScene.vHeight = canvas.clientHeight;
     var ratio = linkedScene.vWidth / linkedScene.vHeight;
     linkedScene.updateViewport(ratio);
-}
-
-/**
- * Adjusts graphical components based on orbit/pan mode state (modes are mutually exclusive)
- * @param {String} activeMode Name of active mode 'Orbit'/'Pan'
- */
-function toggleOrbitPan(activeMode) {
-    if (activeMode === 'Orbit') {
-        toggleActive(79); // activate orbit graphical icon
-        setInactive([80]);
-        modes.pan[1] = false;
-    }
-    else {
-        toggleActive(80);  // activate pan graphical icon
-        setInactive([79]);
-        modes.orbit[1] = false;
-    }
-    feedback.showSnackbar(`${activeMode} Mode on`);
 }
 
 
@@ -304,12 +332,14 @@ function handleControlButtons() {
         }, false);
     });
     // set styles of active buttons
-    var sceneModes = Object.values(modes);
-    sceneModes.forEach((state) => {
-        if (state[1]) {
-            setActive(state[0]);
-        }
-    })
+    setActive(activeMouseMode);
+    setActive(activeKeyboardMode);
+
+    // set grid style
+    if (gridState.active) {
+        let id = gridState.code;
+        document.getElementById('ctrl-' + id).className += ' active';
+    }
 }
 
 /**
@@ -317,18 +347,17 @@ function handleControlButtons() {
  * @param {Number} id ID number of button to activate
  */
 function setActive(id) {
-    document.getElementById('ctrl-' + id).className += ' active';
+    let button = document.getElementById(`ctrl-${id}`);
+    button.className += ' active';
 }
 
 /**
  * Sets button classes to inactive
- * @param {array} idList List of IDs of buttons to deactivate
+ * @param {array} modes List of control modes to deactivate
  */
-function setInactive(idList) {
-    idList.forEach((id) => {
-        var button = document.getElementById(`ctrl-${id}`);
-        button.className = 'ctrl-key';
-    })
+function setInactive(id) {
+    let button = document.getElementById(`ctrl-${id}`);
+    button.className = 'ctrl-key';
 }
 
 /**

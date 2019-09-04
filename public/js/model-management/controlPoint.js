@@ -2,6 +2,7 @@
  * Control Point object
  */
 const DEF_RADIUS = 6;  // default size of control point
+const MAX_DIST = 110;
 
 export class ControlPoint {
     
@@ -45,8 +46,10 @@ export class ControlPoint {
      * @param {Number} dx Change in y coordinate
      */
     updatePosition(dx, dy) {
-        this.dx = dx;
-        this.x += dx;
-        this.y += dy;
+        if (this.x + dx < MAX_DIST) {
+            this.dx = dx;
+            this.x += dx;
+            this.y += dy;
+        }
     }
 }

@@ -213,7 +213,7 @@ export function updateFloorPolygons(floorPolygons, controlPoints) {
             updatedPolygons.push(floorPolygons[i]); // push polygon unchanged   
             continue;
         }
-        let dx = controlPoints[sections - i].dx * 0.09; // control point position change
+        let dx = controlPoints[sections - i].dx * 0.06; // control point position change
         let updatedFloor = [];
         for(let j = 0; j < floorPolygons[i].length; j++) {
             let vertex = floorPolygons[i][j];

@@ -75,11 +75,19 @@ export class Camera {
         var newPosition = this.position;
         var newReference = this.reference;
 
-        newPosition[0] -= Math.sin(degToRad(this.hAngle)) * x;
-        newPosition[2] -= Math.cos(degToRad(this.hAngle)) * z;
+        newPosition[0] -= Math.sin(degToRad(this.hAngle)) !== 0
+            ? Math.sin(degToRad(this.hAngle)) * x 
+            : x;
+        newPosition[2] -= Math.cos(degToRad(this.hAngle)) !== 0
+            ? Math.cos(degToRad(this.hAngle)) * z
+            : z;
         
-        newReference[0] -= Math.sin(degToRad(this.hAngle)) * x;
-        newReference[2] -= Math.cos(degToRad(this.hAngle)) * z;
+        newReference[0] -= Math.sin(degToRad(this.hAngle)) !== 0 
+            ? Math.sin(degToRad(this.hAngle)) * x 
+            : x;
+        newReference[2] -= Math.cos(degToRad(this.hAngle)) !== 0 
+            ? Math.cos(degToRad(this.hAngle)) * z 
+            : z;
 
         this.updatePosition(newPosition);
         this.updateReference(newReference);

@@ -8,7 +8,7 @@ const MODES = { // used for toggling color theme
     LIGHT: 'rgb(20, 23, 37)'
 }
 const DEF_RADIUS = 6;  // default size of control point
-const X_POS_INITIAL = 50;
+const X_POS_INITIAL = 10;
 const Y_POS_INITIAL = 20;   // y coordinate of first control point
 const Y_POS_FINAL = 370;    // y coordinate of last control point
 
