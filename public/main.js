@@ -41,12 +41,11 @@ function main() {
     // create scene and bind renderer
     scene = new Modeller(renderer);
     profileCustomizer = new ProfileCustomizer(profileCanvas);
-    //scene.linkProfileCustomizer(profileCustomizer); // I don't like this very much (2-way link)
     profileCustomizer.linkScene(scene);
     
     // set up event handlers
-    sceneEventHandler = new EventHandler(scene);
-    customizationHandler = new CustomizationHandler(profileCustomizer);
+    //sceneEventHandler = new EventHandler(scene);
+    //customizationHandler = new CustomizationHandler(profileCustomizer);
     docEventHandler = new PageEventHandler(scene, profileCustomizer);
 
     // draw scene

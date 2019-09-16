@@ -1,6 +1,7 @@
 import { fileReader, drawBuildings } from '../file-controllers/fileReader.js';
 import { fileGenerator } from '../file-controllers/fileGenerator.js';
-
+import { EventHandler } from './sceneListeners.js';
+import { CustomizationHandler } from './customizationListeners.js';
 /**
  * Event handling module for general document-related events
  */
@@ -9,6 +10,12 @@ var tabButtons;
 var linkedScene;
 var linkedCustomizer;
 
+var activeTab = '';
+var tabActivatedPreviously = { // keep track of when a tab is activated for the first time
+    controls: false,
+    file: false,
+    customize: false
+}
 
 /**
  * Assigns/binds all event listeners for general document elements
@@ -57,7 +64,21 @@ export function PageEventHandler(scene, profileCustomizer) {
 function handleTabButtons() {
     tabButtons.forEach((element) => {
         element.addEventListener('click', onTabButtonClick, false);
+        if (element.className === 'tab-button active') {
+            activeTab = element.id;
+        }
     });
+
+    if (activeTab === 'controls' && !tabActivatedPreviously.controls) {
+        console.log('Creating scene event handler');
+        new EventHandler(linkedScene);
+        tabActivatedPreviously.controls = true;
+    }
+    if (activeTab === 'customize' && !tabActivatedPreviously.customize) {
+        console.log('Creating customization event handler');
+        new CustomizationHandler(linkedCustomizer);
+        tabActivatedPreviously.customize = true;
+    }
 }
 
 
@@ -66,23 +87,47 @@ function handleTabButtons() {
  * @param {Event} e Click event
  */
 function onTabButtonClick(e) {
-    var button = e.target;
+    let button = e.target;
     if(button.tagName !== 'INPUT') // check that a tab 'button' was actually clicked
         return;
     // deactivate active button
-    tabButtons.forEach((element) => {
-        if(element.className.includes('active') && element !== button) {
-            element.className = "tab-button";
-            var activeId = element.id;
-            var activeTab = document.querySelector(`div`+`#${activeId}`);
-            activeTab.style.display = 'none';
-        }
-    });
+    //tabButtons.forEach((element) => {
+    //    if(element.className.includes('active')) { // ignores selection if 
+    //        element.className = "tab-button";
+    //        var activeId = element.id;
+    //        var activeTab = document.querySelector(`div`+`#${activeId}`);
+    //        activeTab.style.display = 'none';
+    //    }
+    //});
+    //// activate target button
+    //button.className += " active";
+    //var id = button.id;
+    //var tab = document.querySelector(`div`+`#${id}`);
+    //tab.style.display = 'flex';
+
+    // deactivate active button
+    let currActiveButton = document.querySelector(`.tab-button`+`.active`);
+    currActiveButton.className = 'tab-button';
+    let currActiveTab = document.querySelector(`div`+`#${activeTab}`);
+    currActiveTab.style.display = 'none';
+
     // activate target button
-    button.className += " active";
-    var id = button.id;
-    var tab = document.querySelector(`div`+`#${id}`);
-    tab.style.display = 'flex';
+    activeTab = button.id;
+    button.className += ' active';
+    let newTab = document.querySelector(`div`+`#${activeTab}`);
+    newTab.style.display = 'flex';
+
+    // create event handler for tab if necessary
+    if (activeTab === 'controls' && !tabActivatedPreviously.controls) {
+        console.log('Creating scene event handler');
+        new EventHandler(linkedScene);
+        tabActivatedPreviously.controls = true;
+    }
+    if (activeTab === 'customize' && !tabActivatedPreviously.customize) {
+        console.log('Creating customization event handler');
+        new CustomizationHandler(linkedCustomizer);
+        tabActivatedPreviously.customize = true;
+    }
 }
 
 /**

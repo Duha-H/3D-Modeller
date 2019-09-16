@@ -7,6 +7,7 @@ const MODES = { // used for toggling color theme
     DARK: 'white',
     LIGHT: 'rgb(20, 23, 37)'
 }
+const CLEAR = 'rgba(0, 0, 0, 0)';
 const DEF_RADIUS = 6;  // default size of control point
 const X_POS_INITIAL = 10;
 const Y_POS_INITIAL = 20;   // y coordinate of first control point
@@ -27,7 +28,17 @@ export class ProfileCustomizer {
         this.numPoints = 4; // initial number of control points
 
         this.initCtlPts();
-        this.draw();
+        //this.draw();
+    }
+
+    /**
+     * Used to set canvas width and height (when canvas is not visible at instantiation)
+     * @param {Number} width canvas width
+     * @param {Number} height canvas height
+     */
+    setCanvasDimensions(width, height) {
+        this.vWidth = width;
+        this.vHeight = height;
     }
 
     /**

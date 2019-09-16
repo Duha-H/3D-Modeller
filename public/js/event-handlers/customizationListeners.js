@@ -10,6 +10,11 @@ var selectedIdx = -1;
 export function CustomizationHandler(profileCustomizer) {
     linkedCustomizer = profileCustomizer;
     this.canvas = linkedCustomizer.canvas;
+
+    // draw linked customizer
+    linkedCustomizer.setCanvasDimensions(this.canvas.clientWidth, this.canvas.clientHeight);
+    linkedCustomizer.draw();
+    
     // get canvas position
     var rect = this.canvas.getBoundingClientRect();
     canvasX = parseInt(rect.left);
