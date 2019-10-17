@@ -44,6 +44,10 @@ export function CustomizationHandler(profileCustomizer) {
     const resetButton = document.getElementById('reset-cps');
     resetButton.addEventListener("click", resetCtlPts, false); 
 
+    window.addEventListener("keydown", (e) => {
+        keyboardHandler(e.keyCode)
+    }, false);
+
 }
 
 function mouseDown(e) {
@@ -74,6 +78,23 @@ function mouseMove(e) {
 
     oldX = e.pageX - canvasX;
     oldY = e.pageY - canvasY;
+}
+
+/**
+ * Hanldes all keyboard events
+ * @param {Event} e keyboard event
+ */
+function keyboardHandler(keyCode) {
+
+    switch (keyCode) {
+        // TODO: REMOVE ARROW CONTROLS
+        case 78:    // 'n'
+            linkedCustomizer.resetCtlPts(); // reset control points when new building is added
+            break;
+
+        default:
+            break;
+    }
 }
 
 /**

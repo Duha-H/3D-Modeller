@@ -56,6 +56,13 @@ export class Model {
         gl.enableVertexAttribArray(posLocation);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.vertexAttribPointer(posLocation, 3, gl.FLOAT, false, 0, 0);
+        //console.log(this.vertexBuffer);
+
+        //gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+        var arrBuffer = new ArrayBuffer(this.vertices.length * Float32Array.BYTES_PER_ELEMENT);
+        //gl.getBufferSubData(gl.ARRAY_BUFFER, 0, arrBuffer);
+        //console.log(arrBuffer);
 
         gl.enableVertexAttribArray(colorLocation);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
