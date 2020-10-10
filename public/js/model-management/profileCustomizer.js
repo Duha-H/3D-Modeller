@@ -70,12 +70,6 @@ export class ProfileCustomizer {
         // clear canvas
         this.ctx.clearRect(0, 0, this.vWidth, this.vHeight);
 
-        // draw control points
-        this.ctx.fillStyle = this.mode;
-        this.cps.forEach((point) => {
-            point.draw();
-        });
-
         // draw control path
         this.ctx.strokeStyle = 'rgb(138, 230, 236)';
         this.ctx.moveTo(this.cps[0].x, this.cps[0].y);
@@ -108,7 +102,11 @@ export class ProfileCustomizer {
         }        
         this.ctx.stroke();
         
-
+        // draw control points
+        this.ctx.fillStyle = this.mode;
+        this.cps.forEach((point) => {
+            point.draw();
+        });
         
     }
 
