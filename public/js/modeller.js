@@ -50,6 +50,18 @@ export class Modeller extends Scene {
         this.currBldg++;
     }
 
+    /**
+     * Add a duplicate of current building to scene
+     */
+    duplicateCurrentBuilding() {
+        if (this.buildings.length === 0) {
+            return;
+        }
+        var duplicate = Object.assign(new Building(this.gl), this.buildings[this.buildings.length - 1]);
+        this.buildings.push(duplicate);
+        this.currBldg++;
+    }
+
     linkProfileCustomizer(customizer) {
         this.profileCustomizer = customizer;
     }

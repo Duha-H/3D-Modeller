@@ -241,6 +241,12 @@ function keyboardHandler(keyCode) {
                 linkedScene.draw();
             }
             break;
+
+        case 68:    // 'd'
+            linkedScene.duplicateCurrentBuilding();
+            linkedScene.draw();
+            feedback.showSnackbar("Model duplicated");
+            break;
         
         case 69:    // 'e'
             setInactive(activeMouseMode); // deactivate currently-active mode in UI
